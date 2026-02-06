@@ -1,1 +1,3 @@
 [2026-02-06 16:04] MISSING - autoschei_daemon_ctl.sh not found (scripts/ dir does not exist)
+[2026-02-06 16:35] SKIP - scripts/autoschei_daemon_ctl.sh not found (daemon infrastructure not deployed)
+[2026-02-06 17:05] MISSING: autoschei_daemon_ctl.sh not found - script/daemon infrastructure missing
