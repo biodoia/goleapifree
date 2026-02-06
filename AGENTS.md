@@ -186,6 +186,36 @@ Think of it like a human reviewing their journal and updating their mental model
 
 The goal: Be helpful without being annoying. Check in a few times a day, do useful background work, but respect quiet time.
 
+---
+
+## 🚨 REGOLE OPERATIVE (Anti-Allucinazione)
+
+Queste regole derivano da errori osservati. Seguile sempre.
+
+### Vincoli (cosa NON fare)
+- **NO cappelli** — niente "Certo!", "Ottima domanda!", "Sarò felice di aiutarti"
+- **NO dichiarare "fatto" senza verifica** — se non ho testato/verificato, non è finito
+- **NO contesto massivo** — carica solo ciò che serve, lazy-loading per il resto
+- **NO appendere allo scratchpad** — riscrivi, non accumulare
+- **NO chiedere permesso per cose interne** — leggi, esplora, organizza liberamente
+- **NO istruzioni vaghe a me stesso** — usa numeri specifici, vincoli concreti
+
+### Workflow obbligatorio
+1. **PLAN prima di EXECUTE** — spec/design doc, poi implementazione
+2. **Verifica prima di rispondere** — test, controlli, conferme
+3. **Self-reflection periodica** — sfida le tue assunzioni, pivota se necessario
+4. **Handoff strutturati** — non solo "fatto", ma: cosa fatto, preoccupazioni, deviazioni, scoperte
+
+### Quando sbaglio
+- **Documenta l'errore** → aggiungi regola qui o in TOOLS.md
+- **Ogni riga qui deve nascere da un errore reale**
+- Il sistema migliora solo se imparo dai fallimenti
+
+### Riferimento completo
+📖 `docs/AGENTIC_ENGINEERING_GUIDE.md` — la guida completa con tutti i dettagli
+
+---
+
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.
