@@ -7,3 +7,4 @@
 [2026-02-06 19:06] SKIP - autoschei_daemon_ctl.sh not found (scripts/ missing)
 [2026-02-06 19:36] SKIP - autoschei_daemon_ctl.sh not found (scripts/ missing)
 [2026-02-06 20:07] SKIP - autoschei_daemon_ctl.sh not found (scripts/ missing)
+[2026-02-06 21:50] MISSING: scripts/autoschei_daemon_ctl.sh not found - cron job cannot execute
