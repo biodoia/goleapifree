@@ -8,3 +8,23 @@
 [2026-02-06 19:36] SKIP - autoschei_daemon_ctl.sh not found (scripts/ missing)
 [2026-02-06 20:07] SKIP - autoschei_daemon_ctl.sh not found (scripts/ missing)
 [2026-02-06 21:50] MISSING: scripts/autoschei_daemon_ctl.sh not found - cron job cannot execute
+[2026-02-06 22:21] SKIP: autoschei_daemon_ctl.sh not found - script/daemon not configured
+[2026-02-06 22:51] STATUS: MISSING_SCRIPT - ./scripts/autoschei_daemon_ctl.sh not found
+[2026-02-06 23:21] SKIP - autoschei_daemon_ctl.sh not found (infrastructure not deployed)
+[2026-02-06 23:52] MISSING: autoschei_daemon_ctl.sh not found - cron misconfigured
+[2026-02-07 00:22] SKIP - autoschei_daemon_ctl.sh not found (script missing)
+[2026-02-07 00:52] SKIP - autoschei_daemon_ctl.sh not found (script missing)
+[2026-02-07 01:23] SKIP - autoschei_daemon_ctl.sh not found (script/project missing)
+[2026-02-07 01:53] SKIP - autoschei_daemon_ctl.sh not found (script missing)
+[2026-02-07 02:23] SCRIPT_MISSING: autoschei_daemon_ctl.sh not found
+[2026-02-07 03:24] SCRIPT_MISSING - autoschei_daemon_ctl.sh not found, cron misconfigured
+[2026-02-07 03:55] SKIP - autoschei_daemon_ctl.sh not found (script missing)
+[2026-02-07 04:25] SKIP - autoschei_daemon_ctl.sh not found (script missing)
+[2026-02-07 22:01:09] NOT_RUNNING - no active daemon process
+[2026-02-07 22:01:14] STANDBY - autoschei operational, daemon mode not implemented
+[2026-02-07 22:01:14] NOT_RUNNING - no active daemon process
+[2026-02-07 22:01:31] STANDBY - autoschei operational
+[2026-02-07 22:01:36] STOPPED - cleared standby
+[2026-02-07 22:01:36] NOT_RUNNING - no active daemon process
+[2026-02-07 22:01:36] STANDBY - autoschei operational, daemon mode not implemented
+[2026-02-07 22:01:36] STANDBY - autoschei operational
