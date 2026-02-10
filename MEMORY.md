@@ -144,6 +144,23 @@ Validazione automatica con blocco su:
 
 Costo stimato: $0.10-0.15 per workflow completo
 
+### Free Models (OpenRouter, 2026-02-10)
+**6 modelli completamente gratuiti:**
+| Model | Provider | Type | Context |
+|-------|----------|------|---------|
+| qwen3-4b:free | Qwen | Reasoning | 40K |
+| deepseek-r1t-chimera:free | TNG | Reasoning | 163K |
+| mistral-small-3.1-24b-instruct:free | Mistral | Multimodal | 128K |
+| gemma-3-27b-it:free | Google | General | 131K |
+| llama-3.3-70b-instruct:free | Meta | General | 128K |
+| llama-3.2-3b-instruct:free | Meta | General | 131K |
+
+**Vantaggi:**
+- Zero costo per开发和测试
+- Alta frequenza di chiamate
+- Multi-instance per parallelismo
+- OpenRouter aggregation
+
 ### Bifrost vs LiteLLM
 | Metrica | LiteLLM | Bifrost |
 |---------|---------|---------|
@@ -206,6 +223,17 @@ Key insight: Arrange panels based on **actual features** of each TUI app, not ge
 - Gestiti via systemd (start/stop/restart/status)
 - Logs via journalctl
 - Auto-restart on failure
+- FrameGoTUI dashboard per management centralizzato
+
+### Systemd Manager (2026-02-10)
+Panel in FrameGoTUI per gestione backend:
+- View all services: `systemctl status autoschei-*`
+- Start/Stop/Restart: `systemctl <action> <service>`
+- Enable/Disable: `systemctl enable/disable <service>`
+- Logs: `journalctl -u <service> -f`
+- Filter: active/failed/inactive status
+
+**Template location:** `framegotui/systemd/`
 
 ### Core Flow
 ```
@@ -253,4 +281,4 @@ ghrego(scan) → gociccidai → goaiaiai → govai(deploy) → ghrego(commit)
 
 ---
 
-*Last updated: 2026-02-10*
+*Last updated: 2026-02-10 (Systemd Manager + Free Models)*
