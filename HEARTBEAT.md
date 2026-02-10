@@ -62,19 +62,28 @@
 - 🔄 Roadmap (models done, TUI pending)
 - Location: `/home/lisergico25/repos/auto-claude-go`
 
-### Priority 9: Multi-Instance FREE Models ✅ DONE (NEW)
-- [x] Integrated 6 free models (all $0.00):
-  - Qwen3 4B (Reasoning, 40K context)
-  - DeepSeek R1T (Reasoning, 163K context)
-  - Mistral 24B (Multimodal, 128K context)
-  - Gemma 3 27B (General, 131K context)
-  - Llama 70B (General, 128K context)
-  - Llama 3B (General, 131K context)
-- [x] Rotate models with [R] key
-- [x] Each agent assigned a free model
-- [x] Model info panel showing provider, context, cost
-- [x] Sergio: "lancia piu istanze con modelli free di opencode per non cappare"
-- [x] Commit: `b5a6815`
+### Priority 9: Extended Free + Ultra-Cheap Models ✅ DONE (UPDATED)
+- [x] Sergio's feedback: "Free models su opencode, ci sono glm 4.7, minimax 2.1, big pickle etc etc"
+- [x] **17 FREE models** (all $0.00):
+  - Z.AI: glm-4.5-air:free
+  - TNG: tng-r1t-chimera:free, deepseek-r1t2-chimera:free
+  - NVIDIA: nemotron-30b:free, nemotron-12b-vl:free
+  - OpenAI: gpt-oss-120b:free, gpt-oss-20b:free
+  - Qwen: qwen3-4b:free, qwen3-coder:free
+  - Mistral: mistral-24b:free, dolphin-mistral-24b:free
+  - Google: gemma-3-27b:free, gemma-3-12b:free, gemma-3-4b:free
+  - Meta: llama-70b:free, llama-3b:free
+- [x] **6 ULTRA-CHEAP models** (<$0.000001/1M):
+  - z-ai/glm-4.7-flash: **$0.00000006/1M** 🔥 CHEAPEST!
+  - z-ai/glm-4-32b: $0.0000001/1M
+  - minimax/minimax-01: $0.0000002/1M
+  - minimax/minimax-m2: $0.000000255/1M
+  - minimax/minimax-m2.1: $0.00000027/1M
+  - minimax/minimax-m2-her: $0.0000003/1M
+- [x] [R] Rotate all models, [U] Ultra-cheap mode
+- [x] Extended info panel with pricing
+- [x] Total: **23 models** available
+- [x] Commit: `5b22ae8`
 
 ### Priority 10: Systemd Service Manager ✅ DONE (NEW)
 - [x] Systemd service management panel in FrameGoTUI
