@@ -33,4 +33,13 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ---
 
+## Regole Perenni
+
+### URL da WhatsApp → gofainder
+Quando Sergio gira URL via WhatsApp, **sempre** registrarli in:
+- `/home/lisergico25/repos/gofainder/URLS.md` (tabella principale)
+- `/home/lisergico25/repos/gofainder/whatsapp-urls.md` (log dettagliato)
+
+---
+
 Add whatever helps you do your job. This is your cheat sheet.

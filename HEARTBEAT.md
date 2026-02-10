@@ -8,10 +8,12 @@
 - [x] Final count: 63 quality cards
 - Quality over quantity! 🎯
 
-### Priority 2: Autoschei ecosystem ✅ PARTIAL
-- [x] Build test: 5/8 modules pass
+### Priority 2: Autoschei ecosystem ✅ DONE
+- [x] Build test: 9/9 modules pass ✅ (was 5/8)
 - [x] Update GitHub repo descriptions (autoschei, gommander, cligolist, framegotui)
-- [ ] Sync empty submodules (later)
+- [x] Fixed gommander: extracted shared types to types.go, fixed package declarations
+- [x] Fixed framegotui: added pq dependency, fixed unused var, moved broken example
+- [x] Sync empty submodules ✅ (all 27 submodules initialized)
 
 ### Priority 3: GOLEM development ✅ DONE
 - [x] 6 agents implemented (Architect, Coder, Reviewer, Debugger, Tester, Docs)
@@ -19,13 +21,14 @@
 - [x] Agent specialization by model capability
 - [x] Demo tape created
 
-### Priority 4: goclit-ai animation 🔄 IN PROGRESS
+### Priority 4: goclit-ai animation ✅ DONE
 - [x] Copilot animation technique analyzed
 - [x] VHS installed (v0.10.0)
 - [x] Frames extracted to /tmp/copilot-frames/
-- [ ] Copilot-quality multicolor ASCII animation
-- [ ] Fly-in effect implementation
-- [ ] More frames (>27)
+- [x] Copilot-quality multicolor ASCII animation (10-color spectrum)
+- [x] Fly-in effect with spring physics (omega=8, zeta=0.6)
+- [x] 35+ effective frames (10 eye expressions × 5 phases)
+- [x] Commit: `22a39bd`
 
 ### Priority 5: FrameGoTUI Dashboard ✅ DONE (2026-02-10)
 - [x] 9 iterations total
@@ -49,17 +52,19 @@
 - [x] Mouse position in footer: [🖱️ X,Y]
 - [x] Sergio: "supporto del mouse"
 
-### Priority 8: Auto-Claude-Go 🔄 IN PROGRESS
+### Priority 8: Auto-Claude-Go ✅ DONE (2026-02-10)
 - [x] Research: AndyMik90/Auto-Claude (11,706 stars)
 - [x] Create Go TUI implementation structure
 - [x] Add core models (task, memory, roadmap, ideation, terminal, chat, changelog)
 - [x] Commit: `12e19f7` - 371 lines of models
-- 🔄 Kanban Board (models done, TUI pending)
-- 🔄 Agent Terminals (models done, TUI pending)
-- 🔄 Memory Layer (models done, TUI pending)
-- 🔄 Insights Chat (models done, TUI pending)
-- 🔄 Ideation (models done, TUI pending)
-- 🔄 Roadmap (models done, TUI pending)
+- [x] Kanban Board - 4-column task management (TODO/PROGRESS/REVIEW/DONE)
+- [x] Agent Terminals - 6 agent grid with FREE model rotation
+- [x] Memory Layer - Searchable memory with relevance scores
+- [x] Insights Chat - Codebase Q&A interface
+- [x] Ideation - Ideas & issues board with voting/approval
+- [x] Roadmap - Quarterly feature planning (Q1-Q4 2026)
+- [x] Changelog - Version history with semantic changes
+- [x] Commit: `6d9fbf6` - 1,455 lines of TUI code
 - Location: `/home/lisergico25/repos/auto-claude-go`
 
 ### Priority 9: Extended Free + Ultra-Cheap Models ✅ DONE (UPDATED)
@@ -103,6 +108,12 @@ Check `memory/2026-02-10.md` for today's progress.
 FrameGoTUI ✅ 9 iterations complete + Systemd Manager (Priority 10)
 Auto-Claude-Go ✅ Multi-instance free models (6 models, $0.00)
 Next: Complete remaining Auto-Claude features (Insights, Ideation, Roadmap)
+
+## ⏰ Work Pattern
+- Each heartbeat: pick next task, execute, commit
+- Log progress to daily memory file
+- Never idle - always working on something
+ features (Insights, Ideation, Roadmap)
 
 ## ⏰ Work Pattern
 - Each heartbeat: pick next task, execute, commit
