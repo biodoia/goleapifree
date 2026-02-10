@@ -28,19 +28,26 @@
 - [ ] More frames (>27)
 
 ### Priority 5: FrameGoTUI Dashboard ✅ DONE (2026-02-10)
-- [x] 6 iterations of dashboard design
-- [x] Final adaptive layout with 8 module cards
-- [x] Each card has 3 feature-specific panels
-- [x] Sergio's feedback: "riarrangia i pannelli a seconda delle features"
-- [x] Commits: `c869eb9`, `f7b50a7`
+- [x] 8 iterations total
+- [x] Iter 5: 8 cards at center
+- [x] Iter 6: Adaptive layout (Sergio confirmed: "questo è lo stesse che voglio")
+- [x] Iter 7: Status colors + progress bars
+- [x] Iter 8: Harmonica smooth animations
+- [x] Commits: `c869eb9`, `f7b50a7`, `9e6904d`, `9f93e85`
 - Location: `cmd/framegotui/dashboard/`
+
+### Priority 6: Harmonica Animations ✅ DONE
+- [x] Cursor spring: FPS(60), ω=8.0, ζ=0.5
+- [x] Progress springs: FPS(60), ω=6.0, ζ=0.3
+- [x] Smooth interpolation between values
+- [x] Sergio: "animazioni super smooth con harmonica"
 
 ## 📊 Progress Tracking
 Check `memory/2026-02-10.md` for today's progress.
 
 ## 🎯 Current Focus
-FrameGoTUI Dashboard ✅ COMPLETE - 6 iterations, adaptive feature layout
-Next: goclit-ai animation (fly-in effect, more frames)
+FrameGoTUI Dashboard + Harmonica ✅ 8 iterations complete
+Next: Test bubbletea + harmonica integration, or goclit-ai animation
 
 ## ⏰ Work Pattern
 - Each heartbeat: pick next task, execute, commit
