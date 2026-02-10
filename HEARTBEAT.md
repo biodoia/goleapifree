@@ -49,12 +49,27 @@
 - [x] Mouse position in footer: [🖱️ X,Y]
 - [x] Sergio: "supporto del mouse"
 
+### Priority 8: Auto-Claude-Go (NEW) ✅ DONE
+- [x] Research: AndyMik90/Auto-Claude (11,706 stars)
+- [x] Create Go TUI implementation with bubbletea
+- [x] Port all 6 features to TUI:
+  - ✅ Kanban Board
+  - ✅ Agent Terminals
+  - ✅ Memory Layer
+  - 🔄 Insights Chat
+  - 🔄 Ideation
+  - 🔄 Roadmap
+- [x] Apply FrameGoTUI dashboard style
+- [x] Commit: `23a2a69`
+- Location: `/home/lisergico25/repos/auto-claude-go`
+
 ## 📊 Progress Tracking
 Check `memory/2026-02-10.md` for today's progress.
 
 ## 🎯 Current Focus
-FrameGoTUI Dashboard + Harmonica + Mouse ✅ 9 iterations complete
-Next: Integration into FrameGoTUI main binary
+FrameGoTUI Dashboard ✅ 9 iterations complete
+Auto-Claude-Go ✅ Initial commit (11,706 stars → Go TUI)
+Next: Complete remaining Auto-Claude features (Insights, Ideation, Roadmap)
 
 ## ⏰ Work Pattern
 - Each heartbeat: pick next task, execute, commit
