@@ -15,11 +15,18 @@
 - [x] Fixed framegotui: added pq dependency, fixed unused var, moved broken example
 - [x] Sync empty submodules ✅ (all 27 submodules initialized)
 
-### Priority 3: GOLEM development ✅ DONE
+### Priority 3: GOLEM development 🔄 IN PROGRESS
 - [x] 6 agents implemented (Architect, Coder, Reviewer, Debugger, Tester, Docs)
 - [x] Z.AI model integration (GLM-4-32B, GLM-Z1-32B)
 - [x] Agent specialization by model capability
 - [x] Demo tape created
+- 🔄 Phase 2: Z.AI provider (streaming, function calling)
+- 🔄 Phase 3: Claude parity (file ops, shell, session management)
+  - [x] Session persistence (save/load, :s/:n/:l commands)
+- 🔄 Phase 4: MCP enterprise (full integration)
+- 🔄 Phase 5: FrameGoTUI TUI (enhancements)
+- 🔄 Phase 6: Enterprise quality (polishing)
+- Latest: `b792b02` - 💾 Session persistence
 
 ### Priority 4: goclit-ai animation ✅ DONE
 - [x] Copilot animation technique analyzed
@@ -105,15 +112,11 @@
 Check `memory/2026-02-10.md` for today's progress.
 
 ## 🎯 Current Focus
-FrameGoTUI ✅ 9 iterations complete + Systemd Manager (Priority 10)
-Auto-Claude-Go ✅ Multi-instance free models (6 models, $0.00)
-Next: Complete remaining Auto-Claude features (Insights, Ideation, Roadmap)
-
-## ⏰ Work Pattern
-- Each heartbeat: pick next task, execute, commit
-- Log progress to daily memory file
-- Never idle - always working on something
- features (Insights, Ideation, Roadmap)
+**GOLEM development** 🔄 IN PROGRESS
+- Phase 2: Z.AI provider (streaming, function calling)
+- Phase 3: Claude parity (file ops, shell, session management)
+- Phase 4: MCP enterprise (full integration)
+- Taskfile: `/home/lisergico25/repos/golem/Taskfile.yml`
 
 ## ⏰ Work Pattern
 - Each heartbeat: pick next task, execute, commit
