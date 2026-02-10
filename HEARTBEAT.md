@@ -49,18 +49,17 @@
 - [x] Mouse position in footer: [🖱️ X,Y]
 - [x] Sergio: "supporto del mouse"
 
-### Priority 8: Auto-Claude-Go ✅ DONE
+### Priority 8: Auto-Claude-Go 🔄 IN PROGRESS
 - [x] Research: AndyMik90/Auto-Claude (11,706 stars)
-- [x] Create Go TUI implementation with bubbletea
-- [x] Port all 6 features to TUI:
-  - ✅ Kanban Board
-  - ✅ Agent Terminals
-  - ✅ Memory Layer
-  - 🔄 Insights Chat
-  - 🔄 Ideation
-  - 🔄 Roadmap
-- [x] Apply FrameGoTUI dashboard style
-- [x] Commit: `23a2a69`
+- [x] Create Go TUI implementation structure
+- [x] Add core models (task, memory, roadmap, ideation, terminal, chat, changelog)
+- [x] Commit: `12e19f7` - 371 lines of models
+- 🔄 Kanban Board (models done, TUI pending)
+- 🔄 Agent Terminals (models done, TUI pending)
+- 🔄 Memory Layer (models done, TUI pending)
+- 🔄 Insights Chat (models done, TUI pending)
+- 🔄 Ideation (models done, TUI pending)
+- 🔄 Roadmap (models done, TUI pending)
 - Location: `/home/lisergico25/repos/auto-claude-go`
 
 ### Priority 9: Multi-Instance FREE Models ✅ DONE (NEW)
@@ -77,11 +76,22 @@
 - [x] Sergio: "lancia piu istanze con modelli free di opencode per non cappare"
 - [x] Commit: `b5a6815`
 
+### Priority 10: Systemd Service Manager ✅ DONE (NEW)
+- [x] Systemd service management panel in FrameGoTUI
+- [x] View all backend services status (active/inactive/failed)
+- [x] Start/Stop/Restart services
+- [x] Enable/Disable auto-start
+- [x] View logs with journalctl
+- [x] Filter by status
+- [x] Sergio: "ogni backend server è un service systemd 24/7"
+- [x] Commit: `2551a69`
+- Location: `cmd/framegotui/dashboard/systemd_manager.go`
+
 ## 📊 Progress Tracking
 Check `memory/2026-02-10.md` for today's progress.
 
 ## 🎯 Current Focus
-FrameGoTUI Dashboard ✅ 9 iterations complete
+FrameGoTUI ✅ 9 iterations complete + Systemd Manager (Priority 10)
 Auto-Claude-Go ✅ Multi-instance free models (6 models, $0.00)
 Next: Complete remaining Auto-Claude features (Insights, Ideation, Roadmap)
 
