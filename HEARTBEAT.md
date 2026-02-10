@@ -49,7 +49,7 @@
 - [x] Mouse position in footer: [🖱️ X,Y]
 - [x] Sergio: "supporto del mouse"
 
-### Priority 8: Auto-Claude-Go (NEW) ✅ DONE
+### Priority 8: Auto-Claude-Go ✅ DONE
 - [x] Research: AndyMik90/Auto-Claude (11,706 stars)
 - [x] Create Go TUI implementation with bubbletea
 - [x] Port all 6 features to TUI:
@@ -63,12 +63,26 @@
 - [x] Commit: `23a2a69`
 - Location: `/home/lisergico25/repos/auto-claude-go`
 
+### Priority 9: Multi-Instance FREE Models ✅ DONE (NEW)
+- [x] Integrated 6 free models (all $0.00):
+  - Qwen3 4B (Reasoning, 40K context)
+  - DeepSeek R1T (Reasoning, 163K context)
+  - Mistral 24B (Multimodal, 128K context)
+  - Gemma 3 27B (General, 131K context)
+  - Llama 70B (General, 128K context)
+  - Llama 3B (General, 131K context)
+- [x] Rotate models with [R] key
+- [x] Each agent assigned a free model
+- [x] Model info panel showing provider, context, cost
+- [x] Sergio: "lancia piu istanze con modelli free di opencode per non cappare"
+- [x] Commit: `b5a6815`
+
 ## 📊 Progress Tracking
 Check `memory/2026-02-10.md` for today's progress.
 
 ## 🎯 Current Focus
 FrameGoTUI Dashboard ✅ 9 iterations complete
-Auto-Claude-Go ✅ Initial commit (11,706 stars → Go TUI)
+Auto-Claude-Go ✅ Multi-instance free models (6 models, $0.00)
 Next: Complete remaining Auto-Claude features (Insights, Ideation, Roadmap)
 
 ## ⏰ Work Pattern
