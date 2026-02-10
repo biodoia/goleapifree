@@ -1,0 +1,84 @@
+# Configurazione Prometheus per goleapifree
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    cluster: 'goleapai'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Load rules
+rule_files:
+  - '/etc/prometheus/rules.yml'
+
+# Scrape configurations
+scrape_configs:
+  # GoLeapAI Gateway metrics
+  - job_name: 'goleapai-gateway'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8080'  # Per Docker Desktop
+          # - 'gateway:8080'              # Per deployment con Docker Compose
+          # - 'localhost:8080'            # Per deployment locale
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'gateway'
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - 'localhost:9090'
+
+  # Node Exporter (metriche sistema)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets:
+          - 'node-exporter:9100'
+
+  # Redis Exporter (se usi Redis)
+  - job_name: 'redis'
+    static_configs:
+      - targets:
+          - 'redis-exporter:9121'
+
+  # PostgreSQL Exporter (se usi PostgreSQL)
+  - job_name: 'postgres'
+    static_configs:
+      - targets:
+          - 'postgres-exporter:9187'
+
+  # GoLeapAI TUI (se espone metriche)
+  - job_name: 'goleapai-tui'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8081'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'tui'
+
+# Remote write configuration (opzionale, per Prometheus remoto o cloud)
+# remote_write:
+#   - url: https://prometheus-remote-write-endpoint/api/v1/write
+#     basic_auth:
+#       username: user
+#       password: password
+
+# Remote read configuration (opzionale)
+# remote_read:
+#   - url: https://prometheus-remote-read-endpoint/api/v1/read
+#     basic_auth:
+#       username: user
+#       password: password

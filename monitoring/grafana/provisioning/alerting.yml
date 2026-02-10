@@ -1,0 +1,199 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: GoLeapAI Alerts
+    folder: GoLeapAI
+    interval: 1m
+    rules:
+      - uid: high-error-rate
+        title: High Error Rate
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                100 * (
+                  sum(rate(goleapai_requests_total{status=~"[45].."}[5m]))
+                  /
+                  sum(rate(goleapai_requests_total[5m]))
+                ) > 5
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          description: 'Error rate is {{ $value }}%, which exceeds the 5% threshold'
+          summary: High error rate detected in GoLeapAI
+        labels:
+          severity: warning
+          component: goleapai
+
+      - uid: provider-down
+        title: Provider Down
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: goleapai_provider_health_status == 0
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        annotations:
+          description: 'Provider {{ $labels.provider }} is down'
+          summary: AI provider is not responding
+        labels:
+          severity: critical
+          component: provider
+
+      - uid: high-latency
+        title: High Request Latency
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                histogram_quantile(0.95,
+                  sum(rate(goleapai_request_duration_seconds_bucket[5m])) by (le)
+                ) > 1
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          description: 'P95 latency is {{ $value }}s, which exceeds 1s threshold'
+          summary: Request latency is high
+        labels:
+          severity: warning
+          component: performance
+
+      - uid: quota-near-limit
+        title: Provider Quota Near Limit
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (goleapai_provider_quota_used / goleapai_provider_quota_limit) * 100 > 90
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          description: 'Provider {{ $labels.provider }} quota usage is {{ $value }}%'
+          summary: Provider quota near limit
+        labels:
+          severity: warning
+          component: quota
+
+      - uid: low-cache-hit-rate
+        title: Low Cache Hit Rate
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                100 * (
+                  sum(rate(goleapai_cache_hits_total[10m]))
+                  /
+                  (sum(rate(goleapai_cache_hits_total[10m])) + sum(rate(goleapai_cache_misses_total[10m])))
+                ) < 50
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 10m
+        annotations:
+          description: 'Cache hit rate is {{ $value }}%, which is below 50%'
+          summary: Cache hit rate is low
+        labels:
+          severity: info
+          component: cache
+
+      - uid: high-memory-usage
+        title: High Memory Usage
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (go_memstats_heap_alloc_bytes / go_memstats_heap_sys_bytes) * 100 > 90
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          description: 'Memory usage is {{ $value }}%, which exceeds 90%'
+          summary: High memory usage detected
+        labels:
+          severity: warning
+          component: performance
+
+      - uid: failover-spike
+        title: Failover Spike
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                sum(rate(goleapai_provider_failover_total[5m])) > 0.1
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          description: 'Failover rate is {{ $value }} per second'
+          summary: High number of provider failovers detected
+        labels:
+          severity: warning
+          component: provider
+
+contactPoints:
+  - orgId: 1
+    name: default-email
+    receivers:
+      - uid: default-email
+        type: email
+        settings:
+          addresses: admin@example.com
+        disableResolveMessage: false
+
+policies:
+  - orgId: 1
+    receiver: default-email
+    group_by:
+      - alertname
+      - severity
+    group_wait: 10s
+    group_interval: 5m
+    repeat_interval: 4h
+    matchers:
+      - severity =~ "warning|critical"

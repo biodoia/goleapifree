@@ -1,0 +1,545 @@
+# GoLeapAI GraphQL Schema
+# Alternative to REST API with real-time capabilities
+
+# Custom Scalars
+scalar UUID
+scalar DateTime
+scalar JSON
+
+# ================================================================================
+# Query Types
+# ================================================================================
+
+type Query {
+  # Provider queries
+  providers(
+    filter: ProviderFilter
+    sort: ProviderSort
+    limit: Int = 50
+    offset: Int = 0
+  ): ProviderConnection!
+
+  provider(id: UUID!): Provider
+  providerByName(name: String!): Provider
+
+  # Model queries
+  models(
+    filter: ModelFilter
+    sort: ModelSort
+    limit: Int = 100
+    offset: Int = 0
+  ): ModelConnection!
+
+  model(id: UUID!): Model
+  modelsByProvider(providerID: UUID!): [Model!]!
+
+  # Stats queries
+  stats(timeRange: TimeRange!): GlobalStats!
+  providerStats(
+    providerID: UUID!
+    timeRange: TimeRange!
+  ): ProviderStats!
+
+  realtimeMetrics: RealtimeMetrics!
+
+  # Health queries
+  health: HealthStatus!
+  providerHealth(providerID: UUID!): ProviderHealthStatus!
+}
+
+# ================================================================================
+# Mutation Types
+# ================================================================================
+
+type Mutation {
+  # Provider mutations
+  createProvider(input: CreateProviderInput!): Provider!
+  updateProvider(id: UUID!, input: UpdateProviderInput!): Provider!
+  deleteProvider(id: UUID!): Boolean!
+
+  # Provider operations
+  verifyProvider(id: UUID!): ProviderHealthStatus!
+  toggleProviderStatus(id: UUID!, enabled: Boolean!): Provider!
+
+  # Model mutations
+  createModel(input: CreateModelInput!): Model!
+  updateModel(id: UUID!, input: UpdateModelInput!): Model!
+  deleteModel(id: UUID!): Boolean!
+
+  # Request operations
+  createChatRequest(input: ChatRequestInput!): ChatResponse!
+
+  # Admin operations
+  flushCache: Boolean!
+  refreshDiscovery: Boolean!
+}
+
+# ================================================================================
+# Subscription Types
+# ================================================================================
+
+type Subscription {
+  # Real-time stats updates
+  liveStats(interval: Int = 5): GlobalStats!
+
+  # Provider status updates
+  providerUpdates(providerID: UUID): ProviderUpdate!
+
+  # Request monitoring
+  requestStream(providerID: UUID): RequestEvent!
+
+  # Health monitoring
+  healthUpdates(interval: Int = 10): [ProviderHealthStatus!]!
+}
+
+# ================================================================================
+# Core Types
+# ================================================================================
+
+type Provider {
+  id: UUID!
+  name: String!
+  type: ProviderType!
+  status: ProviderStatus!
+  baseURL: String!
+  authType: AuthType!
+  tier: Int!
+
+  # Discovery metadata
+  discoveredAt: DateTime!
+  lastVerified: DateTime
+  source: String!
+
+  # Capabilities
+  supportsStreaming: Boolean!
+  supportsTools: Boolean!
+  supportsJSON: Boolean!
+
+  # Health metrics
+  lastHealthCheck: DateTime
+  healthScore: Float!
+  avgLatencyMs: Int!
+
+  # Relations
+  models: [Model!]!
+  rateLimits: [RateLimit!]!
+  stats(timeRange: TimeRange!): ProviderStats!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Model {
+  id: UUID!
+  providerID: UUID!
+  provider: Provider!
+
+  name: String!
+  displayName: String
+  modality: Modality!
+
+  # Specifications
+  contextLength: Int!
+  maxOutputTokens: Int!
+  inputPricePer1k: Float!
+  outputPricePer1k: Float!
+
+  # Capabilities
+  capabilities: JSON!
+
+  # Quality metrics
+  qualityScore: Float!
+  speedScore: Float!
+
+  # Metadata
+  description: String
+  tags: [String!]!
+
+  # Computed fields
+  isFree: Boolean!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RateLimit {
+  id: UUID!
+  providerID: UUID!
+  provider: Provider!
+
+  requestsPerMinute: Int!
+  requestsPerHour: Int!
+  requestsPerDay: Int!
+  tokensPerMinute: Int
+
+  # Current usage
+  currentUsage: RateLimitUsage!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RateLimitUsage {
+  requestsThisMinute: Int!
+  requestsThisHour: Int!
+  requestsThisDay: Int!
+  tokensThisMinute: Int!
+  resetAt: DateTime!
+}
+
+# ================================================================================
+# Stats Types
+# ================================================================================
+
+type GlobalStats {
+  totalProviders: Int!
+  activeProviders: Int!
+  totalModels: Int!
+
+  totalRequests: Int!
+  successfulRequests: Int!
+  failedRequests: Int!
+
+  totalTokens: Int!
+  avgLatencyMs: Float!
+  successRate: Float!
+
+  costSaved: Float!
+
+  timeRange: TimeRange!
+  timestamp: DateTime!
+}
+
+type ProviderStats {
+  id: UUID!
+  providerID: UUID!
+  provider: Provider!
+
+  successRate: Float!
+  avgLatencyMs: Int!
+  totalRequests: Int!
+  totalTokens: Int!
+  costSaved: Float!
+
+  errorCount: Int!
+  timeoutCount: Int!
+  quotaExhausted: Int!
+
+  timestamp: DateTime!
+}
+
+type RealtimeMetrics {
+  requestsPerSecond: Float!
+  activeConnections: Int!
+  queuedRequests: Int!
+
+  providerMetrics: [ProviderRealtimeMetrics!]!
+
+  timestamp: DateTime!
+}
+
+type ProviderRealtimeMetrics {
+  providerID: UUID!
+  providerName: String!
+  status: ProviderStatus!
+  currentLatencyMs: Int!
+  requestsInProgress: Int!
+  healthScore: Float!
+}
+
+# ================================================================================
+# Health Types
+# ================================================================================
+
+type HealthStatus {
+  status: String!
+  version: String!
+  uptime: Int!
+
+  database: ComponentHealth!
+  cache: ComponentHealth!
+  providers: ComponentHealth!
+
+  timestamp: DateTime!
+}
+
+type ComponentHealth {
+  status: String!
+  latencyMs: Int
+  message: String
+}
+
+type ProviderHealthStatus {
+  providerID: UUID!
+  providerName: String!
+
+  isHealthy: Boolean!
+  healthScore: Float!
+  latencyMs: Int!
+
+  lastCheck: DateTime!
+  lastSuccess: DateTime
+  consecutiveFailures: Int!
+
+  details: String
+}
+
+# ================================================================================
+# Connection Types (Pagination)
+# ================================================================================
+
+type ProviderConnection {
+  edges: [ProviderEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ProviderEdge {
+  node: Provider!
+  cursor: String!
+}
+
+type ModelConnection {
+  edges: [ModelEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ModelEdge {
+  node: Model!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# ================================================================================
+# Input Types
+# ================================================================================
+
+input ProviderFilter {
+  type: ProviderType
+  status: ProviderStatus
+  tier: Int
+  supportStreaming: Boolean
+  minHealthScore: Float
+  search: String
+}
+
+input ProviderSort {
+  field: ProviderSortField!
+  direction: SortDirection!
+}
+
+input ModelFilter {
+  providerID: UUID
+  modality: Modality
+  isFree: Boolean
+  minQualityScore: Float
+  minContextLength: Int
+  search: String
+}
+
+input ModelSort {
+  field: ModelSortField!
+  direction: SortDirection!
+}
+
+input TimeRange {
+  start: DateTime!
+  end: DateTime!
+  interval: TimeInterval
+}
+
+input CreateProviderInput {
+  name: String!
+  type: ProviderType!
+  baseURL: String!
+  authType: AuthType!
+  tier: Int = 3
+  source: String = "manual"
+  supportsStreaming: Boolean = true
+  supportsTools: Boolean = false
+  supportsJSON: Boolean = true
+}
+
+input UpdateProviderInput {
+  name: String
+  type: ProviderType
+  status: ProviderStatus
+  baseURL: String
+  authType: AuthType
+  tier: Int
+  supportsStreaming: Boolean
+  supportsTools: Boolean
+  supportsJSON: Boolean
+}
+
+input CreateModelInput {
+  providerID: UUID!
+  name: String!
+  displayName: String
+  modality: Modality!
+  contextLength: Int!
+  maxOutputTokens: Int!
+  inputPricePer1k: Float = 0.0
+  outputPricePer1k: Float = 0.0
+  capabilities: JSON
+  description: String
+  tags: [String!]
+}
+
+input UpdateModelInput {
+  name: String
+  displayName: String
+  modality: Modality
+  contextLength: Int
+  maxOutputTokens: Int
+  inputPricePer1k: Float
+  outputPricePer1k: Float
+  capabilities: JSON
+  qualityScore: Float
+  speedScore: Float
+  description: String
+  tags: [String!]
+}
+
+input ChatRequestInput {
+  model: String!
+  messages: [ChatMessageInput!]!
+  temperature: Float
+  maxTokens: Int
+  stream: Boolean = false
+}
+
+input ChatMessageInput {
+  role: String!
+  content: String!
+}
+
+# ================================================================================
+# Response Types
+# ================================================================================
+
+type ChatResponse {
+  id: String!
+  model: String!
+  provider: String!
+  choices: [ChatChoice!]!
+  usage: TokenUsage!
+  latencyMs: Int!
+}
+
+type ChatChoice {
+  index: Int!
+  message: ChatMessage!
+  finishReason: String
+}
+
+type ChatMessage {
+  role: String!
+  content: String!
+}
+
+type TokenUsage {
+  promptTokens: Int!
+  completionTokens: Int!
+  totalTokens: Int!
+}
+
+# ================================================================================
+# Event Types (Subscriptions)
+# ================================================================================
+
+type ProviderUpdate {
+  type: ProviderUpdateType!
+  provider: Provider!
+  timestamp: DateTime!
+}
+
+type RequestEvent {
+  id: UUID!
+  providerID: UUID!
+  providerName: String!
+  modelName: String!
+  statusCode: Int!
+  latencyMs: Int!
+  success: Boolean!
+  timestamp: DateTime!
+}
+
+# ================================================================================
+# Enums
+# ================================================================================
+
+enum ProviderType {
+  FREE
+  FREEMIUM
+  PAID
+  LOCAL
+}
+
+enum ProviderStatus {
+  ACTIVE
+  DEPRECATED
+  DOWN
+  MAINTENANCE
+}
+
+enum AuthType {
+  NONE
+  API_KEY
+  BEARER
+  OAUTH2
+}
+
+enum Modality {
+  CHAT
+  COMPLETION
+  EMBEDDING
+  AUDIO
+  VIDEO
+  IMAGE
+  REALTIME
+  MULTIMODAL
+}
+
+enum ProviderSortField {
+  NAME
+  HEALTH_SCORE
+  AVG_LATENCY
+  CREATED_AT
+  TIER
+}
+
+enum ModelSortField {
+  NAME
+  QUALITY_SCORE
+  SPEED_SCORE
+  CONTEXT_LENGTH
+  CREATED_AT
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+enum TimeInterval {
+  MINUTE
+  HOUR
+  DAY
+  WEEK
+  MONTH
+}
+
+enum ProviderUpdateType {
+  STATUS_CHANGE
+  HEALTH_UPDATE
+  MODELS_UPDATED
+  RATE_LIMIT_CHANGE
+}

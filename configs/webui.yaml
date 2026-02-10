@@ -1,0 +1,40 @@
+# GoLeapAI Web UI Configuration
+# Code Page 437 Edition
+
+server:
+  port: 8080
+  host: 0.0.0.0
+  http3: false  # Disable HTTP/3 for WebUI (WebSocket compatibility)
+  tls:
+    enabled: false
+    cert: ""
+    key: ""
+
+database:
+  type: sqlite
+  connection: ./data/goleapai.db
+  max_conns: 25
+  log_level: warn
+
+redis:
+  host: localhost:6379
+  password: ""
+  db: 0
+
+providers:
+  auto_discovery: true
+  health_check_interval: 5m
+  default_timeout: 30s
+
+routing:
+  strategy: cost_optimized  # cost_optimized | latency_first | quality_first
+  failover_enabled: true
+  max_retries: 3
+
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9090
+  logging:
+    level: info
+    format: json

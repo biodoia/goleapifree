@@ -1,0 +1,210 @@
+# Prometheus alerting rules per goleapifree
+
+groups:
+  - name: goleapai_alerts
+    interval: 30s
+    rules:
+      # Alert per success rate basso
+      - alert: LowSuccessRate
+        expr: |
+          (
+            sum(rate(goleapai_requests_total{status="success"}[5m]))
+            /
+            sum(rate(goleapai_requests_total[5m]))
+          ) < 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Success rate below 90%"
+          description: "Success rate is {{ $value | humanizePercentage }} (below 90% threshold)"
+
+      # Alert per success rate critico
+      - alert: CriticalSuccessRate
+        expr: |
+          (
+            sum(rate(goleapai_requests_total{status="success"}[5m]))
+            /
+            sum(rate(goleapai_requests_total[5m]))
+          ) < 0.5
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICAL: Success rate below 50%"
+          description: "Success rate is {{ $value | humanizePercentage }} (critically low)"
+
+      # Alert per latenza alta
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95,
+            rate(goleapai_request_duration_milliseconds_bucket[5m])
+          ) > 5000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request latency (p95)"
+          description: "95th percentile latency is {{ $value }}ms (above 5000ms threshold)"
+
+      # Alert per latenza critica
+      - alert: CriticalLatency
+        expr: |
+          histogram_quantile(0.95,
+            rate(goleapai_request_duration_milliseconds_bucket[5m])
+          ) > 10000
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICAL: Very high request latency"
+          description: "95th percentile latency is {{ $value }}ms (critically high)"
+
+      # Alert per error rate alto
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(goleapai_request_errors_total[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors/sec"
+
+      # Alert per nessun provider attivo
+      - alert: NoActiveProviders
+        expr: goleapai_active_providers == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICAL: No active providers"
+          description: "All providers are down or inactive"
+
+      # Alert per pochi provider attivi
+      - alert: LowProviderCount
+        expr: goleapai_active_providers < 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low number of active providers"
+          description: "Only {{ $value }} provider(s) active"
+
+      # Alert per health score basso
+      - alert: LowProviderHealth
+        expr: goleapai_provider_health_score < 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low provider health score"
+          description: "Provider {{ $labels.provider }} has health score {{ $value }}"
+
+      # Alert per quota alta
+      - alert: HighQuotaUsage
+        expr: goleapai_quota_usage_ratio > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High quota usage"
+          description: "Provider {{ $labels.provider }} quota usage at {{ $value | humanizePercentage }}"
+
+      # Alert per quota quasi esaurita
+      - alert: QuotaAlmostExhausted
+        expr: goleapai_quota_usage_ratio > 0.95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICAL: Quota almost exhausted"
+          description: "Provider {{ $labels.provider }} quota at {{ $value | humanizePercentage }}"
+
+      # Alert per troppi timeout
+      - alert: HighTimeoutRate
+        expr: |
+          sum(rate(goleapai_request_errors_total{error_type="timeout"}[5m]))
+          /
+          sum(rate(goleapai_requests_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High timeout rate"
+          description: "Timeout rate is {{ $value | humanizePercentage }}"
+
+      # Alert per rate limiting frequente
+      - alert: FrequentRateLimiting
+        expr: |
+          sum(rate(goleapai_request_errors_total{error_type="rate_limit"}[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Frequent rate limiting"
+          description: "Rate limit errors at {{ $value }}/sec"
+
+  - name: goleapai_recording_rules
+    interval: 30s
+    rules:
+      # Success rate per provider
+      - record: goleapai:success_rate:5m
+        expr: |
+          sum by (provider) (rate(goleapai_requests_total{status="success"}[5m]))
+          /
+          sum by (provider) (rate(goleapai_requests_total[5m]))
+
+      # Error rate per provider
+      - record: goleapai:error_rate:5m
+        expr: |
+          sum by (provider) (rate(goleapai_request_errors_total[5m]))
+          /
+          sum by (provider) (rate(goleapai_requests_total[5m]))
+
+      # Latency p50 per provider
+      - record: goleapai:latency_p50:5m
+        expr: |
+          histogram_quantile(0.50,
+            sum by (provider, le) (
+              rate(goleapai_request_duration_milliseconds_bucket[5m])
+            )
+          )
+
+      # Latency p95 per provider
+      - record: goleapai:latency_p95:5m
+        expr: |
+          histogram_quantile(0.95,
+            sum by (provider, le) (
+              rate(goleapai_request_duration_milliseconds_bucket[5m])
+            )
+          )
+
+      # Latency p99 per provider
+      - record: goleapai:latency_p99:5m
+        expr: |
+          histogram_quantile(0.99,
+            sum by (provider, le) (
+              rate(goleapai_request_duration_milliseconds_bucket[5m])
+            )
+          )
+
+      # Request rate totale
+      - record: goleapai:requests:rate5m
+        expr: |
+          sum(rate(goleapai_requests_total[5m]))
+
+      # Token rate totale
+      - record: goleapai:tokens:rate1m
+        expr: |
+          sum(rate(goleapai_tokens_processed_total[1m]))
+
+      # Cost saved per hour
+      - record: goleapai:cost_saved:1h
+        expr: |
+          sum(increase(goleapai_cost_saved_total[1h]))
+
+      # Requests in flight per provider
+      - record: goleapai:requests_in_flight:sum
+        expr: |
+          sum by (provider) (goleapai_requests_in_flight)

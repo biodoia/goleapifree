@@ -1,0 +1,72 @@
+# Configurazione sistema statistiche goleapifree
+
+stats:
+  # Collector configuration
+  collector:
+    # Dimensione buffer per request logs prima del flush
+    buffer_size: 100
+
+    # Intervallo di flush nel database (formato: 10s, 1m, 5m)
+    flush_interval: "10s"
+
+  # Aggregator configuration
+  aggregator:
+    # Intervallo di aggregazione statistiche (formato: 1m, 5m, 15m)
+    aggregation_interval: "1m"
+
+    # Retention giorni per dati aggregati
+    retention_days: 30
+
+    # Retention giorni per request logs (di solito più breve)
+    request_logs_retention_days: 7
+
+  # Prometheus exporter configuration
+  prometheus:
+    # Abilita/disabilita Prometheus exporter
+    enabled: true
+
+    # Namespace per metriche Prometheus
+    namespace: "goleapai"
+
+    # Intervallo aggiornamento gauge metrics
+    update_interval: "15s"
+
+    # Porta per endpoint /metrics (usa la stessa del server principale)
+    # port: 8080
+
+  # Dashboard configuration
+  dashboard:
+    # Cache TTL per dati dashboard (formato: 30s, 1m, 5m)
+    cache_ttl: "30s"
+
+    # Top providers limit (numero di provider da mostrare)
+    top_providers_limit: 5
+
+    # Recent errors limit
+    recent_errors_limit: 10
+
+# Configurazione Prometheus esterno (opzionale)
+prometheus_external:
+  # URL Prometheus server
+  url: "http://localhost:9090"
+
+  # Scrape interval
+  scrape_interval: "15s"
+
+  # Evaluation interval
+  evaluation_interval: "15s"
+
+# Configurazione Grafana (opzionale)
+grafana:
+  # URL Grafana server
+  url: "http://localhost:3000"
+
+  # Admin credentials
+  admin_user: "admin"
+  admin_password: "admin"
+
+  # Auto-provision dashboards
+  auto_provision: true
+
+  # Dashboard directory
+  dashboards_path: "./configs/grafana/dashboards"

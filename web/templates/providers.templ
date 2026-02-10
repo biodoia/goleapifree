@@ -1,0 +1,105 @@
+package templates
+
+import (
+	"fmt"
+	"github.com/biodoia/goleapifree/pkg/models"
+)
+
+templ ProvidersList(providers []models.Provider) {
+	<div class="providers-list">
+		<table class="ascii-table">
+			<thead>
+				<tr>
+					<th>STATUS</th>
+					<th>PROVIDER</th>
+					<th>TYPE</th>
+					<th>HEALTH</th>
+					<th>LATENCY</th>
+					<th>ACTIONS</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, provider := range providers {
+					@ProviderRow(&provider)
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+templ ProviderRow(provider *models.Provider) {
+	<tr id={ fmt.Sprintf("provider-%s", provider.ID) } class={ getProviderRowClass(provider) }>
+		<td>
+			@ProviderStatusBadge(provider.Status)
+		</td>
+		<td class="provider-name">
+			{ provider.Name }
+		</td>
+		<td>
+			@ProviderTypeBadge(provider.Type)
+		</td>
+		<td>
+			@HealthBar(provider.HealthScore)
+		</td>
+		<td>
+			{ fmt.Sprintf("%dms", provider.AvgLatencyMs) }
+		</td>
+		<td class="actions">
+			<button
+				class="btn btn-small"
+				hx-post={ fmt.Sprintf("/htmx/provider/%s/toggle", provider.ID) }
+				hx-target={ fmt.Sprintf("#provider-%s", provider.ID) }
+				hx-swap="outerHTML">
+				TOGGLE
+			</button>
+			<button
+				class="btn btn-small"
+				hx-post={ fmt.Sprintf("/htmx/provider/%s/test", provider.ID) }
+				hx-target={ fmt.Sprintf("#provider-%s", provider.ID) }
+				hx-swap="outerHTML">
+				TEST
+			</button>
+		</td>
+	</tr>
+}
+
+templ ProviderStatusBadge(status models.ProviderStatus) {
+	switch status {
+		case models.ProviderStatusActive:
+			<span class="badge badge-active">█ ACTIVE</span>
+		case models.ProviderStatusDown:
+			<span class="badge badge-down">█ DOWN</span>
+		case models.ProviderStatusMaintenance:
+			<span class="badge badge-warn">█ MAINT</span>
+		case models.ProviderStatusDeprecated:
+			<span class="badge badge-deprecated">█ DEPR</span>
+	}
+}
+
+templ ProviderTypeBadge(providerType models.ProviderType) {
+	switch providerType {
+		case models.ProviderTypeFree:
+			<span class="type-badge type-free">FREE</span>
+		case models.ProviderTypeFreemium:
+			<span class="type-badge type-freemium">FREM</span>
+		case models.ProviderTypePaid:
+			<span class="type-badge type-paid">PAID</span>
+		case models.ProviderTypeLocal:
+			<span class="type-badge type-local">LOCL</span>
+	}
+}
+
+templ HealthBar(score float64) {
+	<div class="health-bar">
+		<div class="health-bar-fill" style={ fmt.Sprintf("width: %.0f%%", score*100) }>
+			{ fmt.Sprintf("%.0f%%", score*100) }
+		</div>
+	</div>
+}
+
+func getProviderRowClass(provider *models.Provider) string {
+	if provider.Status == models.ProviderStatusActive {
+		return "provider-row provider-active"
+	}
+	return "provider-row provider-inactive"
+}

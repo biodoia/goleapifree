@@ -1,0 +1,57 @@
+package templates
+
+import "github.com/biodoia/goleapifree/pkg/models"
+
+templ Dashboard() {
+	@Layout("Dashboard") {
+		@Header()
+		@Navigation()
+		<main class="main-content">
+			<div class="dashboard-grid">
+				<!-- Providers Panel -->
+				<section class="panel" id="providers-panel">
+					<div class="panel-header">
+						╔═══════════════════════════════════════════════════════════════════╗
+						║                          PROVIDERS                                 ║
+						╚═══════════════════════════════════════════════════════════════════╝
+					</div>
+					<div class="panel-content"
+						 hx-get="/htmx/providers"
+						 hx-trigger="load, every 5s"
+						 hx-swap="innerHTML">
+						<div class="loading">█ LOADING PROVIDERS...</div>
+					</div>
+				</section>
+				<!-- Stats Panel -->
+				<section class="panel" id="stats-panel">
+					<div class="panel-header">
+						╔═══════════════════════════════════════════════════════════════════╗
+						║                        STATISTICS                                  ║
+						╚═══════════════════════════════════════════════════════════════════╝
+					</div>
+					<div class="panel-content"
+						 hx-get="/htmx/stats"
+						 hx-trigger="load, every 2s"
+						 hx-swap="innerHTML">
+						<div class="loading">█ LOADING STATS...</div>
+					</div>
+				</section>
+				<!-- Logs Panel -->
+				<section class="panel panel-full" id="logs-panel">
+					<div class="panel-header">
+						╔═══════════════════════════════════════════════════════════════════╗
+						║                        RECENT LOGS                                 ║
+						╚═══════════════════════════════════════════════════════════════════╝
+					</div>
+					<div class="panel-content"
+						 hx-get="/htmx/logs"
+						 hx-trigger="load, every 3s"
+						 hx-swap="innerHTML">
+						<div class="loading">█ LOADING LOGS...</div>
+					</div>
+				</section>
+			</div>
+		</main>
+		@Footer()
+	}
+}

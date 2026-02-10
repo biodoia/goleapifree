@@ -1,0 +1,66 @@
+name: goleapai
+description: "GoLeapAI - Free LLM Gateway"
+version: "1.0.0"
+
+# Build configuration
+build:
+  type: "go"
+  main: "cmd/backend/main.go"
+  output: "bin/goleapai"
+  flags:
+    - "-ldflags=-s -w"
+    - "-trimpath"
+
+# Services to deploy
+services:
+  - name: backend
+    binary: "bin/goleapai"
+    args: ["serve"]
+    env:
+      - "GOLEAPAI_CONFIG=configs/config.yaml"
+    ports:
+      - 8080:8080
+    health_check:
+      endpoint: "/health"
+      interval: 30
+    restart: always
+
+  - name: tui
+    binary: "bin/goleapai-tui"
+    type: manual
+    description: "TUI Dashboard (run manually)"
+
+# Database setup
+database:
+  type: sqlite
+  path: "./data/goleapai.db"
+  auto_migrate: true
+
+# Dependencies
+dependencies:
+  - name: redis
+    type: optional
+    port: 6379
+    description: "Cache and rate limiting"
+
+# Pre-deployment hooks
+hooks:
+  pre_deploy:
+    - "mkdir -p data bin logs"
+    - "go mod download"
+    - "go build -o bin/goleapai cmd/backend/main.go"
+    - "go build -o bin/goleapai-tui cmd/tui/main.go"
+
+  post_deploy:
+    - "./bin/goleapai migrate up"
+    - "echo 'GoLeapAI deployed successfully!'"
+
+# Monitoring
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9090
+  logs:
+    path: "./logs"
+    rotate: true
+    max_size: "100M"

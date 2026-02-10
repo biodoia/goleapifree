@@ -1,0 +1,220 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: goleapai
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: goleapai-config
+  namespace: goleapai
+data:
+  config.yaml: |
+    server:
+      port: 8080
+      host: "0.0.0.0"
+      http3: true
+
+    database:
+      type: "postgres"
+      connection: "postgresql://goleapai:goleapai@postgres:5432/goleapai?sslmode=disable"
+      max_conns: 50
+
+    redis:
+      host: "redis:6379"
+      password: ""
+      db: 0
+
+    providers:
+      auto_discovery: true
+      health_check_interval: "5m"
+      default_timeout: "30s"
+
+    routing:
+      strategy: "cost_optimized"
+      failover_enabled: true
+      max_retries: 3
+
+    monitoring:
+      prometheus:
+        enabled: true
+        port: 9090
+      logging:
+        level: "info"
+        format: "json"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: goleapai-secrets
+  namespace: goleapai
+type: Opaque
+stringData:
+  postgres-password: "goleapai"
+  jwt-secret: "change-this-in-production"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goleapai
+  namespace: goleapai
+  labels:
+    app: goleapai
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: goleapai
+  template:
+    metadata:
+      labels:
+        app: goleapai
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: goleapai
+        image: goleapai:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: DATABASE_CONNECTION
+          value: "postgresql://goleapai:$(POSTGRES_PASSWORD)@postgres:5432/goleapai?sslmode=disable"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: goleapai-secrets
+              key: postgres-password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: goleapai-secrets
+              key: jwt-secret
+        volumeMounts:
+        - name: config
+          mountPath: /app/configs
+          readOnly: true
+        - name: data
+          mountPath: /app/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+      - name: config
+        configMap:
+          name: goleapai-config
+      - name: data
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: goleapai
+  namespace: goleapai
+  labels:
+    app: goleapai
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  selector:
+    app: goleapai
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: goleapai-ingress
+  namespace: goleapai
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - goleapai.example.com
+    secretName: goleapai-tls
+  rules:
+  - host: goleapai.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: goleapai
+            port:
+              number: 8080
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: goleapai-hpa
+  namespace: goleapai
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: goleapai
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

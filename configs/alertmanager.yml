@@ -1,0 +1,159 @@
+# Configurazione AlertManager per goleapifree
+
+global:
+  # Tempo di risoluzione alert
+  resolve_timeout: 5m
+
+  # SMTP configuration per notifiche email
+  smtp_from: 'alerts@goleapai.example.com'
+  smtp_smarthost: 'smtp.example.com:587'
+  smtp_auth_username: 'alerts@goleapai.example.com'
+  smtp_auth_password: 'password'
+  smtp_require_tls: true
+
+# Template files
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route tree
+route:
+  # Default receiver
+  receiver: 'default'
+
+  # Group alerts
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+
+  # Routes specifiche
+  routes:
+    # Alert critici - notifica immediata
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 0s
+      repeat_interval: 4h
+      continue: true
+
+    # Alert warning - notifica raggruppata
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      group_wait: 30s
+      repeat_interval: 12h
+
+    # Alert specifici per provider
+    - match_re:
+        alertname: '(LowProviderHealth|QuotaAlmostExhausted)'
+      receiver: 'provider-alerts'
+      repeat_interval: 6h
+
+    # Alert di performance
+    - match_re:
+        alertname: '(HighLatency|LowSuccessRate)'
+      receiver: 'performance-alerts'
+      repeat_interval: 8h
+
+# Inhibition rules - sopprime alert ridondanti
+inhibit_rules:
+  # Sopprimi warning se c'è critical per stesso alert
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'service']
+
+  # Sopprimi high error rate se success rate è critico
+  - source_match:
+      alertname: 'CriticalSuccessRate'
+    target_match:
+      alertname: 'HighErrorRate'
+    equal: ['cluster']
+
+# Receivers - destinazioni notifiche
+receivers:
+  # Default receiver
+  - name: 'default'
+    email_configs:
+      - to: 'team@goleapai.example.com'
+        send_resolved: true
+
+  # Critical alerts - multiple channels
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'oncall@goleapai.example.com'
+        headers:
+          Subject: '[CRITICAL] GoLeapAI Alert: {{ .GroupLabels.alertname }}'
+        send_resolved: true
+
+    # Slack notification
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+        channel: '#goleapai-critical'
+        title: 'CRITICAL: {{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        send_resolved: true
+
+    # PagerDuty (opzionale)
+    # pagerduty_configs:
+    #   - service_key: 'YOUR_PAGERDUTY_KEY'
+    #     send_resolved: true
+
+    # Webhook (opzionale, per integrazione custom)
+    # webhook_configs:
+    #   - url: 'https://your-webhook-endpoint.com/alerts'
+    #     send_resolved: true
+
+  # Warning alerts
+  - name: 'warning-alerts'
+    email_configs:
+      - to: 'team@goleapai.example.com'
+        headers:
+          Subject: '[WARNING] GoLeapAI: {{ .GroupLabels.alertname }}'
+        send_resolved: true
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+        channel: '#goleapai-warnings'
+        title: 'Warning: {{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+
+  # Provider-specific alerts
+  - name: 'provider-alerts'
+    email_configs:
+      - to: 'providers@goleapai.example.com'
+        headers:
+          Subject: '[PROVIDER] GoLeapAI: {{ .GroupLabels.alertname }}'
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+        channel: '#goleapai-providers'
+        title: 'Provider Issue: {{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}Provider {{ .Labels.provider }}: {{ .Annotations.description }}{{ end }}'
+
+  # Performance alerts
+  - name: 'performance-alerts'
+    email_configs:
+      - to: 'performance@goleapai.example.com'
+        headers:
+          Subject: '[PERFORMANCE] GoLeapAI: {{ .GroupLabels.alertname }}'
+
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+        channel: '#goleapai-performance'
+        title: 'Performance Issue: {{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+
+# Time intervals (opzionale - per muting durante manutenzione)
+# time_intervals:
+#   - name: 'maintenance-window'
+#     time_intervals:
+#       - weekdays: ['saturday', 'sunday']
+#         times:
+#           - start_time: '02:00'
+#             end_time: '06:00'
+
+# Mute time intervals (opzionale)
+# mute_time_intervals:
+#   - 'maintenance-window'

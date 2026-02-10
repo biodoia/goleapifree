@@ -1,0 +1,60 @@
+package templates
+
+templ Layout(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title } - GoLeapAI CP437</title>
+			<link rel="stylesheet" href="/static/css/cp437.css"/>
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<script src="/static/js/htmx-config.js"></script>
+		</head>
+		<body>
+			<div class="screen">
+				<div class="scanlines"></div>
+				<div class="phosphor-glow"></div>
+				<div class="container">
+					{ children... }
+				</div>
+			</div>
+		</body>
+	</html>
+}
+
+templ Header() {
+	<header class="header">
+		<div class="header-top">
+			╔═══════════════════════════════════════════════════════════════════════════════╗
+		</div>
+		<div class="header-content">
+			║                     █▀▀ █▀█ █   █▀▀ ▄▀█ █▀█ ▄▀█ █                            ║
+			║                     █▄█ █▄█ █▄▄ ██▄ █▀█ █▀▀ █▀█ █                            ║
+			║                        FREE LLM GATEWAY - CP437 EDITION                       ║
+		</div>
+		<div class="header-bottom">
+			╚═══════════════════════════════════════════════════════════════════════════════╝
+		</div>
+	</header>
+}
+
+templ Navigation() {
+	<nav class="navigation">
+		<div class="nav-box">
+			┌─────────────────────────────────────────────────────────────────────────────┐
+			│ [F1] Dashboard │ [F2] Providers │ [F3] Stats │ [F4] Logs │ [F10] Exit      │
+			└─────────────────────────────────────────────────────────────────────────────┘
+		</div>
+	</nav>
+}
+
+templ Footer() {
+	<footer class="footer">
+		<div class="footer-box">
+			┌─────────────────────────────────────────────────────────────────────────────┐
+			│ Status: <span class="status-active">█ ONLINE</span> │ Uptime: 24h 15m │ Requests/s: <span id="rps">42</span> │
+			└─────────────────────────────────────────────────────────────────────────────┘
+		</div>
+	</footer>
+}

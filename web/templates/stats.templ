@@ -1,0 +1,112 @@
+package templates
+
+import (
+	"fmt"
+	"github.com/biodoia/goleapifree/pkg/models"
+)
+
+templ StatsPanel(stats []models.ProviderStats) {
+	<div class="stats-grid">
+		<div class="stat-box">
+			<div class="stat-label">TOTAL REQUESTS</div>
+			<div class="stat-value">{ formatTotalRequests(stats) }</div>
+			<div class="stat-graph">
+				████████████████░░░░
+			</div>
+		</div>
+		<div class="stat-box">
+			<div class="stat-label">SUCCESS RATE</div>
+			<div class="stat-value">{ formatSuccessRate(stats) }</div>
+			<div class="stat-graph">
+				█████████████████░░░
+			</div>
+		</div>
+		<div class="stat-box">
+			<div class="stat-label">AVG LATENCY</div>
+			<div class="stat-value">{ formatAvgLatency(stats) }</div>
+			<div class="stat-graph">
+				██████████░░░░░░░░░░
+			</div>
+		</div>
+		<div class="stat-box">
+			<div class="stat-label">COST SAVED</div>
+			<div class="stat-value">{ formatCostSaved(stats) }</div>
+			<div class="stat-graph">
+				███████████████████░
+			</div>
+		</div>
+		<div class="stat-box stat-box-wide">
+			<div class="stat-label">PROVIDERS STATUS</div>
+			<div class="providers-status-grid">
+				<div class="status-item">
+					<span class="status-dot status-active">█</span> Active: <span class="status-count">12</span>
+				</div>
+				<div class="status-item">
+					<span class="status-dot status-down">█</span> Down: <span class="status-count">2</span>
+				</div>
+				<div class="status-item">
+					<span class="status-dot status-warn">█</span> Warning: <span class="status-count">1</span>
+				</div>
+			</div>
+		</div>
+		<div class="stat-box stat-box-wide">
+			<div class="stat-label">REQUEST TIMELINE (LAST HOUR)</div>
+			<div class="timeline">
+				<pre class="timeline-graph">
+20 │                                    █
+15 │                      █             █
+10 │          █     █     █       █     █
+ 5 │    █     █     █     █  █    █  █  █
+ 0 │────┴─────┴─────┴─────┴──┴────┴──┴──┴─────
+    00   10    20    30    40   50   60  min
+				</pre>
+			</div>
+		</div>
+	</div>
+}
+
+func formatTotalRequests(stats []models.ProviderStats) string {
+	var total int64
+	for _, s := range stats {
+		total += s.TotalRequests
+	}
+	if total > 1000000 {
+		return fmt.Sprintf("%.1fM", float64(total)/1000000)
+	}
+	if total > 1000 {
+		return fmt.Sprintf("%.1fK", float64(total)/1000)
+	}
+	return fmt.Sprintf("%d", total)
+}
+
+func formatSuccessRate(stats []models.ProviderStats) string {
+	if len(stats) == 0 {
+		return "0.0%"
+	}
+	var totalRate float64
+	for _, s := range stats {
+		totalRate += s.SuccessRate
+	}
+	avgRate := totalRate / float64(len(stats))
+	return fmt.Sprintf("%.1f%%", avgRate*100)
+}
+
+func formatAvgLatency(stats []models.ProviderStats) string {
+	if len(stats) == 0 {
+		return "0ms"
+	}
+	var totalLatency int64
+	for _, s := range stats {
+		totalLatency += int64(s.AvgLatencyMs)
+	}
+	avgLatency := totalLatency / int64(len(stats))
+	return fmt.Sprintf("%dms", avgLatency)
+}
+
+func formatCostSaved(stats []models.ProviderStats) string {
+	var total float64
+	for _, s := range stats {
+		total += s.CostSaved
+	}
+	return fmt.Sprintf("$%.2f", total)
+}

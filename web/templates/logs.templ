@@ -1,0 +1,83 @@
+package templates
+
+import (
+	"fmt"
+	"time"
+	"github.com/biodoia/goleapifree/pkg/models"
+)
+
+templ LogsViewer(logs []models.RequestLog) {
+	<div class="logs-viewer">
+		<table class="logs-table">
+			<thead>
+				<tr>
+					<th>TIME</th>
+					<th>STATUS</th>
+					<th>PROVIDER</th>
+					<th>ENDPOINT</th>
+					<th>LATENCY</th>
+					<th>TOKENS</th>
+					<th>RESULT</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, log := range logs {
+					@LogRow(&log)
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+templ LogRow(log *models.RequestLog) {
+	<tr class={ getLogRowClass(log) }>
+		<td class="log-time">
+			{ formatLogTime(log.Timestamp) }
+		</td>
+		<td class="log-status">
+			@StatusCode(log.StatusCode)
+		</td>
+		<td class="log-provider">
+			{ log.ProviderID.String()[:8] }...
+		</td>
+		<td class="log-endpoint">
+			{ log.Endpoint }
+		</td>
+		<td class="log-latency">
+			{ fmt.Sprintf("%dms", log.LatencyMs) }
+		</td>
+		<td class="log-tokens">
+			{ fmt.Sprintf("%d/%d", log.InputTokens, log.OutputTokens) }
+		</td>
+		<td class="log-result">
+			if log.Success {
+				<span class="result-success">✓ OK</span>
+			} else {
+				<span class="result-error">✗ ERR</span>
+			}
+		</td>
+	</tr>
+}
+
+templ StatusCode(code int) {
+	if code >= 200 && code < 300 {
+		<span class="status-2xx">{ fmt.Sprintf("%d", code) }</span>
+	} else if code >= 400 && code < 500 {
+		<span class="status-4xx">{ fmt.Sprintf("%d", code) }</span>
+	} else if code >= 500 {
+		<span class="status-5xx">{ fmt.Sprintf("%d", code) }</span>
+	} else {
+		<span class="status-other">{ fmt.Sprintf("%d", code) }</span>
+	}
+}
+
+func formatLogTime(t time.Time) string {
+	return t.Format("15:04:05")
+}
+
+func getLogRowClass(log *models.RequestLog) string {
+	if log.Success {
+		return "log-row log-success"
+	}
+	return "log-row log-error"
+}

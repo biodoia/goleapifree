@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoLeapiFree - Real-time Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f1419;
+            color: #e1e8ed;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .status.connected {
+            background: #4caf50;
+        }
+
+        .status.disconnected {
+            background: #f44336;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #192734;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #8899a6;
+            border-bottom: 2px solid #38444d;
+            padding-bottom: 10px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #38444d;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: #8899a6;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .metric-value.success {
+            color: #4caf50;
+        }
+
+        .metric-value.warning {
+            color: #ff9800;
+        }
+
+        .metric-value.error {
+            color: #f44336;
+        }
+
+        .logs {
+            background: #192734;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #38444d;
+            background: #0f1419;
+            border-radius: 5px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+
+        .log-entry.success {
+            border-color: #4caf50;
+        }
+
+        .log-entry.error {
+            border-color: #f44336;
+        }
+
+        .log-time {
+            color: #8899a6;
+            margin-right: 10px;
+        }
+
+        .log-method {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .log-status {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+
+        .log-status.success {
+            background: #4caf50;
+        }
+
+        .log-status.error {
+            background: #f44336;
+        }
+
+        .providers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .provider-card {
+            background: #0f1419;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #38444d;
+        }
+
+        .provider-card.healthy {
+            border-color: #4caf50;
+        }
+
+        .provider-card.degraded {
+            border-color: #ff9800;
+        }
+
+        .provider-card.down {
+            border-color: #f44336;
+        }
+
+        .provider-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .provider-metric {
+            font-size: 0.9rem;
+            color: #8899a6;
+            margin: 5px 0;
+        }
+
+        .health-score {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .health-score.high {
+            background: #4caf50;
+        }
+
+        .health-score.medium {
+            background: #ff9800;
+        }
+
+        .health-score.low {
+            background: #f44336;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8899a6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 GoLeapiFree Dashboard</h1>
+            <p class="subtitle">Real-time monitoring via Server-Sent Events</p>
+            <div id="connection-status" class="status disconnected">Disconnected</div>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2><span class="live-indicator"></span>Global Statistics</h2>
+                <div id="global-stats" class="loading">Connecting...</div>
+            </div>
+
+            <div class="card">
+                <h2>Cost Analysis</h2>
+                <div id="cost-stats" class="loading">Connecting...</div>
+            </div>
+
+            <div class="card">
+                <h2>Performance</h2>
+                <div id="performance-stats" class="loading">Connecting...</div>
+            </div>
+
+            <div class="card">
+                <h2>Users</h2>
+                <div id="user-stats" class="loading">Connecting...</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 20px;">
+            <h2><span class="live-indicator"></span>Providers Status</h2>
+            <div id="providers" class="providers loading">Loading providers...</div>
+        </div>
+
+        <div class="logs">
+            <h2><span class="live-indicator"></span>Live Request Logs</h2>
+            <div id="logs"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080';
+        let statsSource = null;
+        let logsSource = null;
+        let providersSource = null;
+        let requestsSource = null;
+
+        // Connection status
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connection-status');
+            status.className = `status ${connected ? 'connected' : 'disconnected'}`;
+            status.textContent = connected ? 'Connected' : 'Disconnected';
+        }
+
+        // Format numbers
+        function formatNumber(num) {
+            return num.toLocaleString();
+        }
+
+        function formatCost(cost) {
+            return `$${cost.toFixed(4)}`;
+        }
+
+        function formatPercent(value) {
+            return `${(value * 100).toFixed(1)}%`;
+        }
+
+        function formatLatency(ms) {
+            return `${ms.toFixed(0)}ms`;
+        }
+
+        // Update global stats
+        function updateGlobalStats(data) {
+            const container = document.getElementById('global-stats');
+            container.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Total Requests</span>
+                    <span class="metric-value">${formatNumber(data.total_requests)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Success Rate</span>
+                    <span class="metric-value success">
+                        ${data.total_requests > 0 ? formatPercent(data.successful_requests / data.total_requests) : '0%'}
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Total Tokens</span>
+                    <span class="metric-value">${formatNumber(data.total_tokens)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Providers</span>
+                    <span class="metric-value">${data.providers.length}</span>
+                </div>
+            `;
+        }
+
+        // Update cost stats
+        function updateCostStats(data) {
+            const container = document.getElementById('cost-stats');
+            container.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Total Cost</span>
+                    <span class="metric-value">${formatCost(data.total_cost)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg per Request</span>
+                    <span class="metric-value">${formatCost(data.avg_cost_per_req || 0)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Cost/Minute</span>
+                    <span class="metric-value warning">${formatCost(data.cost_per_minute || 0)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Est. Hourly</span>
+                    <span class="metric-value error">${formatCost(data.estimated_hourly_cost || 0)}</span>
+                </div>
+            `;
+        }
+
+        // Update performance stats
+        function updatePerformanceStats(data) {
+            const container = document.getElementById('performance-stats');
+            container.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Avg Latency</span>
+                    <span class="metric-value">${formatLatency(data.avg_latency_ms || 0)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Tokens/Req</span>
+                    <span class="metric-value">${(data.avg_tokens_per_req || 0).toFixed(0)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Success Count</span>
+                    <span class="metric-value success">${formatNumber(data.successful_requests)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Failed Count</span>
+                    <span class="metric-value error">${formatNumber(data.failed_requests)}</span>
+                </div>
+            `;
+        }
+
+        // Update user stats
+        function updateUserStats(data) {
+            const container = document.getElementById('user-stats');
+            container.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Active Users</span>
+                    <span class="metric-value success">${data.active_users}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Unique Today</span>
+                    <span class="metric-value">${data.unique_users_today}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Last Update</span>
+                    <span class="metric-value">
+                        ${new Date(data.last_updated * 1000).toLocaleTimeString()}
+                    </span>
+                </div>
+            `;
+        }
+
+        // Update providers
+        function updateProviders(data) {
+            const container = document.getElementById('providers');
+
+            if (!data.providers || data.providers.length === 0) {
+                container.innerHTML = '<p>No providers available</p>';
+                return;
+            }
+
+            container.innerHTML = data.providers.map(provider => {
+                const healthClass = provider.health_score > 0.8 ? 'high' :
+                                  provider.health_score > 0.5 ? 'medium' : 'low';
+                const cardClass = provider.health_score > 0.8 ? 'healthy' :
+                                provider.health_score > 0.5 ? 'degraded' : 'down';
+
+                return `
+                    <div class="provider-card ${cardClass}">
+                        <div class="provider-name">${provider.name}</div>
+                        <div class="provider-metric">
+                            Health: <span class="health-score ${healthClass}">
+                                ${formatPercent(provider.health_score)}
+                            </span>
+                        </div>
+                        <div class="provider-metric">
+                            Latency: ${formatLatency(provider.avg_latency_ms)}
+                        </div>
+                        <div class="provider-metric">
+                            Requests: ${formatNumber(provider.realtime_requests || 0)}
+                        </div>
+                        <div class="provider-metric">
+                            Success: ${formatPercent(provider.realtime_success_rate || 0)}
+                        </div>
+                        <div class="provider-metric">
+                            Models: ${provider.model_count}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Add log entry
+        function addLogEntry(log) {
+            const container = document.getElementById('logs');
+            const entryClass = log.success ? 'success' : 'error';
+            const statusClass = log.success ? 'success' : 'error';
+            const time = new Date(log.timestamp * 1000).toLocaleTimeString();
+
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${entryClass}`;
+            entry.innerHTML = `
+                <span class="log-time">${time}</span>
+                <span class="log-method">${log.method}</span>
+                <span class="log-status ${statusClass}">${log.status_code}</span>
+                <span>${log.endpoint}</span>
+                <span style="float: right; color: #8899a6;">
+                    ${formatLatency(log.latency_ms)} |
+                    ${log.input_tokens + log.output_tokens} tokens |
+                    ${formatCost(log.estimated_cost)}
+                </span>
+            `;
+
+            container.insertBefore(entry, container.firstChild);
+
+            // Keep only last 50 logs
+            while (container.children.length > 50) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        // Connect to stats stream
+        function connectStats() {
+            statsSource = new EventSource(`${API_BASE}/stream/stats`);
+
+            statsSource.addEventListener('stats', (e) => {
+                const data = JSON.parse(e.data);
+
+                // Calculate aggregates
+                let totalRequests = data.total_requests || 0;
+                let totalTokens = data.total_tokens || 0;
+                let totalCost = data.total_cost || 0;
+                let successfulRequests = 0;
+                let failedRequests = 0;
+
+                // Aggregate from providers
+                if (data.providers) {
+                    data.providers.forEach(p => {
+                        successfulRequests += p.total_requests * p.success_rate;
+                        failedRequests += p.error_count || 0;
+                    });
+                }
+
+                const aggregatedData = {
+                    total_requests: totalRequests,
+                    successful_requests: successfulRequests,
+                    failed_requests: failedRequests,
+                    total_tokens: totalTokens,
+                    total_cost: totalCost,
+                    avg_cost_per_req: totalRequests > 0 ? totalCost / totalRequests : 0,
+                    avg_tokens_per_req: totalRequests > 0 ? totalTokens / totalRequests : 0,
+                    providers: data.providers || [],
+                    last_updated: data.timestamp
+                };
+
+                updateGlobalStats(aggregatedData);
+                updateCostStats(aggregatedData);
+                updatePerformanceStats(aggregatedData);
+            });
+
+            statsSource.addEventListener('heartbeat', (e) => {
+                console.log('💓 Heartbeat');
+            });
+
+            statsSource.onopen = () => {
+                console.log('Stats stream connected');
+                updateConnectionStatus(true);
+            };
+
+            statsSource.onerror = () => {
+                console.error('Stats stream error');
+                updateConnectionStatus(false);
+            };
+        }
+
+        // Connect to providers stream
+        function connectProviders() {
+            providersSource = new EventSource(`${API_BASE}/stream/providers`);
+
+            providersSource.addEventListener('providers', (e) => {
+                const data = JSON.parse(e.data);
+                updateProviders(data);
+            });
+
+            providersSource.onerror = () => {
+                console.error('Providers stream error');
+            };
+        }
+
+        // Connect to logs stream
+        function connectLogs() {
+            logsSource = new EventSource(`${API_BASE}/stream/logs`);
+
+            logsSource.addEventListener('logs', (e) => {
+                const data = JSON.parse(e.data);
+                if (data.logs) {
+                    data.logs.forEach(log => addLogEntry(log));
+                }
+            });
+
+            logsSource.onerror = () => {
+                console.error('Logs stream error');
+            };
+        }
+
+        // Connect to requests stream (individual requests)
+        function connectRequests() {
+            requestsSource = new EventSource(`${API_BASE}/stream/requests`);
+
+            requestsSource.addEventListener('requests', (e) => {
+                const log = JSON.parse(e.data);
+                addLogEntry(log);
+            });
+
+            requestsSource.onerror = () => {
+                console.error('Requests stream error');
+            };
+        }
+
+        // Fetch initial metrics via REST API
+        async function fetchInitialMetrics() {
+            try {
+                const response = await fetch(`${API_BASE}/api/realtime/metrics`);
+                const result = await response.json();
+
+                if (result.success) {
+                    updateGlobalStats(result.data);
+                    updateCostStats(result.data);
+                    updatePerformanceStats(result.data);
+                    updateUserStats(result.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch initial metrics:', error);
+            }
+        }
+
+        // Initialize
+        function init() {
+            fetchInitialMetrics();
+            connectStats();
+            connectProviders();
+            connectLogs();
+            connectRequests();
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (statsSource) statsSource.close();
+            if (logsSource) logsSource.close();
+            if (providersSource) providersSource.close();
+            if (requestsSource) requestsSource.close();
+        });
+
+        // Start
+        init();
+    </script>
+</body>
+</html>

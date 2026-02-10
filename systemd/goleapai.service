@@ -1,0 +1,49 @@
+[Unit]
+Description=GoLeapAI - LLM Gateway Unificato
+Documentation=https://github.com/biodoia/goleapifree
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=goleapai
+Group=goleapai
+WorkingDirectory=/opt/goleapai
+
+# Binary path
+ExecStart=/opt/goleapai/bin/goleapai --config /opt/goleapai/configs/config.yaml
+
+# Restart policy
+Restart=on-failure
+RestartSec=5s
+StartLimitInterval=60s
+StartLimitBurst=3
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/goleapai/data /opt/goleapai/logs
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=goleapai
+
+# Environment
+Environment="GOLEAPAI_ENV=production"
+Environment="LOG_LEVEL=info"
+EnvironmentFile=-/etc/goleapai/environment
+
+# Graceful shutdown
+TimeoutStopSec=30s
+KillMode=mixed
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

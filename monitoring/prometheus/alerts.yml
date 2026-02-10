@@ -1,0 +1,225 @@
+groups:
+  - name: goleapai_alerts
+    interval: 30s
+    rules:
+      # High Error Rate Alert
+      - alert: HighErrorRate
+        expr: |
+          100 * (
+            sum(rate(goleapai_requests_total{status=~"[45].."}[5m]))
+            /
+            sum(rate(goleapai_requests_total[5m]))
+          ) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: goleapai
+          team: platform
+        annotations:
+          summary: "High error rate detected in GoLeapAI"
+          description: "Error rate is {{ $value | humanizePercentage }}, which exceeds the 5% threshold for the last 5 minutes."
+          runbook_url: "https://docs.goleapai.com/runbooks/high-error-rate"
+
+      # Provider Down Alert
+      - alert: ProviderDown
+        expr: goleapai_provider_health_status == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: provider
+          team: platform
+        annotations:
+          summary: "AI Provider {{ $labels.provider }} is down"
+          description: "Provider {{ $labels.provider }} has been unhealthy for 2 minutes."
+          runbook_url: "https://docs.goleapai.com/runbooks/provider-down"
+
+      # High Latency Alert (P95 > 1s)
+      - alert: HighRequestLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(goleapai_request_duration_seconds_bucket[5m])) by (le)
+          ) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: performance
+          team: platform
+        annotations:
+          summary: "High request latency detected"
+          description: "P95 latency is {{ $value | humanizeDuration }}, which exceeds 1s threshold for the last 5 minutes."
+          runbook_url: "https://docs.goleapai.com/runbooks/high-latency"
+
+      # Quota Near Limit Alert (>90%)
+      - alert: QuotaNearLimit
+        expr: |
+          (goleapai_provider_quota_used / goleapai_provider_quota_limit) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          component: quota
+          team: platform
+        annotations:
+          summary: "Provider {{ $labels.provider }} quota near limit"
+          description: "Provider {{ $labels.provider }} quota usage is {{ $value | humanizePercentage }}, approaching the limit."
+          runbook_url: "https://docs.goleapai.com/runbooks/quota-limit"
+
+      # Quota Exhausted Alert (>95%)
+      - alert: QuotaExhausted
+        expr: |
+          (goleapai_provider_quota_used / goleapai_provider_quota_limit) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: quota
+          team: platform
+        annotations:
+          summary: "Provider {{ $labels.provider }} quota nearly exhausted"
+          description: "Provider {{ $labels.provider }} quota usage is {{ $value | humanizePercentage }}, immediate action required."
+          runbook_url: "https://docs.goleapai.com/runbooks/quota-exhausted"
+
+      # Low Cache Hit Rate Alert
+      - alert: LowCacheHitRate
+        expr: |
+          100 * (
+            sum(rate(goleapai_cache_hits_total[10m]))
+            /
+            (sum(rate(goleapai_cache_hits_total[10m])) + sum(rate(goleapai_cache_misses_total[10m])))
+          ) < 50
+        for: 10m
+        labels:
+          severity: info
+          component: cache
+          team: platform
+        annotations:
+          summary: "Low cache hit rate detected"
+          description: "Cache hit rate is {{ $value | humanizePercentage }}, which is below 50% for the last 10 minutes."
+          runbook_url: "https://docs.goleapai.com/runbooks/low-cache-hit-rate"
+
+      # High Memory Usage Alert
+      - alert: HighMemoryUsage
+        expr: |
+          (go_memstats_heap_alloc_bytes / go_memstats_heap_sys_bytes) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          component: performance
+          team: platform
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value | humanizePercentage }}, which exceeds 90% for the last 5 minutes."
+          runbook_url: "https://docs.goleapai.com/runbooks/high-memory-usage"
+
+      # Excessive Goroutines Alert
+      - alert: ExcessiveGoroutines
+        expr: go_goroutines > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: performance
+          team: platform
+        annotations:
+          summary: "Excessive number of goroutines"
+          description: "Number of goroutines is {{ $value }}, which exceeds 1000 for the last 5 minutes."
+          runbook_url: "https://docs.goleapai.com/runbooks/excessive-goroutines"
+
+      # Provider Failover Spike Alert
+      - alert: ProviderFailoverSpike
+        expr: |
+          sum(rate(goleapai_provider_failover_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: provider
+          team: platform
+        annotations:
+          summary: "High number of provider failovers detected"
+          description: "Failover rate is {{ $value }} per second, indicating potential provider instability."
+          runbook_url: "https://docs.goleapai.com/runbooks/failover-spike"
+
+      # Database Connection Pool Exhaustion
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          goleapai_db_connections_active /
+          (goleapai_db_connections_active + goleapai_db_connections_idle) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+          team: platform
+        annotations:
+          summary: "Database connection pool near exhaustion"
+          description: "Active database connections are {{ $value | humanizePercentage }} of the pool, approaching limit."
+          runbook_url: "https://docs.goleapai.com/runbooks/db-pool-exhausted"
+
+      # Slow Database Queries
+      - alert: SlowDatabaseQueries
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(goleapai_db_query_duration_seconds_bucket[5m])) by (le, query)
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: info
+          component: database
+          team: platform
+        annotations:
+          summary: "Slow database queries detected"
+          description: "P95 query time for {{ $labels.query }} is {{ $value | humanizeDuration }}, exceeding 500ms."
+          runbook_url: "https://docs.goleapai.com/runbooks/slow-queries"
+
+      # Service Instance Down
+      - alert: ServiceInstanceDown
+        expr: up{job="goleapai"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: goleapai
+          team: platform
+        annotations:
+          summary: "GoLeapAI service instance is down"
+          description: "GoLeapAI instance {{ $labels.instance }} has been down for 1 minute."
+          runbook_url: "https://docs.goleapai.com/runbooks/instance-down"
+
+      # High Request Rate (Potential DDoS)
+      - alert: HighRequestRate
+        expr: |
+          sum(rate(goleapai_requests_total[1m])) > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+          team: platform
+        annotations:
+          summary: "Unusually high request rate detected"
+          description: "Request rate is {{ $value }} req/s, which may indicate a DDoS attack or unusual traffic pattern."
+          runbook_url: "https://docs.goleapai.com/runbooks/high-request-rate"
+
+      # Cost Threshold Alert
+      - alert: HighCostBurn
+        expr: |
+          rate(goleapai_cost_total[1h]) > 10
+        for: 30m
+        labels:
+          severity: warning
+          component: cost
+          team: finance
+        annotations:
+          summary: "High cost burn rate detected"
+          description: "Cost is burning at ${{ $value }}/hour, exceeding the $10/hour threshold."
+          runbook_url: "https://docs.goleapai.com/runbooks/high-cost-burn"
+
+      # Provider Response Time Degradation
+      - alert: ProviderLatencyDegradation
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(goleapai_provider_request_duration_seconds_bucket[5m])) by (le, provider)
+          ) > 2
+        for: 5m
+        labels:
+          severity: info
+          component: provider
+          team: platform
+        annotations:
+          summary: "Provider {{ $labels.provider }} latency degradation"
+          description: "P95 latency for {{ $labels.provider }} is {{ $value | humanizeDuration }}, exceeding 2s threshold."
+          runbook_url: "https://docs.goleapai.com/runbooks/provider-latency-degradation"

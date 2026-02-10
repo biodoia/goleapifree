@@ -1,0 +1,81 @@
+version: '3.8'
+
+# Docker Compose per sviluppo locale
+
+services:
+  # PostgreSQL per development
+  postgres:
+    image: postgres:16-alpine
+    container_name: goleapai-dev-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=goleapai
+      - POSTGRES_PASSWORD=devpassword
+      - POSTGRES_DB=goleapai_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U goleapai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis per development
+  redis:
+    image: redis:7-alpine
+    container_name: goleapai-dev-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-dev-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Prometheus per development
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: goleapai-dev-prometheus
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-dev-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Grafana per development
+  grafana:
+    image: grafana/grafana:latest
+    container_name: goleapai-dev-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=
+    volumes:
+      - grafana-dev-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres-dev-data:
+  redis-dev-data:
+  prometheus-dev-data:
+  grafana-dev-data:

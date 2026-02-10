@@ -1,0 +1,83 @@
+# Discovery Configuration Example
+# Auto-discovery system for free LLM APIs
+
+discovery:
+  # Enable/disable auto-discovery
+  enabled: true
+
+  # Discovery interval (how often to run discovery)
+  interval: 24h
+
+  # GitHub API token for higher rate limits (optional but recommended)
+  # Get one at: https://github.com/settings/tokens
+  github_token: ""
+
+  # Enable GitHub repository discovery
+  github_enabled: true
+
+  # Enable web scraping of awesome lists
+  scraper_enabled: true
+
+  # Maximum concurrent validations
+  max_concurrent: 5
+
+  # Validation timeout per endpoint
+  validation_timeout: 30s
+
+  # Minimum health score to accept a candidate (0.0-1.0)
+  min_health_score: 0.6
+
+  # Search terms for GitHub discovery
+  discovery_search_terms:
+    - "free llm api"
+    - "free ai api"
+    - "free gpt api"
+    - "free claude api"
+    - "ai proxy free"
+    - "llm gateway"
+    - "openai compatible"
+    - "chatgpt free"
+    - "gpt4free"
+    - "free anthropic"
+
+# Provider filtering options
+filters:
+  # Minimum stars for GitHub repositories
+  min_stars: 5
+
+  # Maximum age for repositories (in days)
+  max_age_days: 365
+
+  # Exclude providers matching these patterns
+  exclude_patterns:
+    - "test"
+    - "demo"
+    - "example"
+    - "tutorial"
+
+# Validation settings
+validation:
+  # Test these endpoints to determine compatibility
+  test_endpoints:
+    - "/v1/models"
+    - "/v1/chat/completions"
+    - "/v1/messages"
+
+  # Minimum latency threshold (ms)
+  max_latency_ms: 5000
+
+  # Retry failed validations
+  retry_count: 2
+  retry_delay: 5s
+
+# Database settings for discovered providers
+database:
+  # Auto-save valid providers
+  auto_save: true
+
+  # Default tier for discovered providers
+  default_tier: 3  # 1=premium, 2=standard, 3=experimental
+
+  # Auto-verify existing providers
+  auto_verify_existing: true
+  verify_interval: 6h

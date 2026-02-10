@@ -1,0 +1,24 @@
+# Environment variables
+.env
+
+# Backup files
+backups/
+*.tar.gz
+
+# Docker volumes
+data/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.iml
