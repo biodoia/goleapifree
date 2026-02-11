@@ -202,6 +202,37 @@ RAG acceleration technique:
 - **Accuracy boost**: 43% su NaturalQuestions
 - **Perché funziona**: Riduce interference tra retrieved chunks
 
+### Vibe Coding Paradigm (2026-02-11)
+Introdotto da Andrej Karpathy (feb 2025):
+- **Definizione**: "Scrivo il codice, ma non lo leggo. Accetto i completamenti, eseguo, vedo l'errore, lo incollo nel prompt, e ripeto finché non funziona"
+- **Differenza chiave**: Dal copilot (suggerimenti nell'editor) all'agente CLI (eseguire, navigare file system, gestire Git)
+- **Rischio**: "Vibe Coding Hangover" - codice inmanutenibile
+
+### CLI Agents Landscape (2026-02-11)
+**Top 5 per stelle GitHub**:
+| Agent | Stars | Language | Key Feature |
+|-------|-------|----------|-------------|
+| Gemini CLI | 87.3K | TypeScript | 2M token context |
+| Cline | 56.2K | TypeScript | VS Code integration |
+| Codex | 52.9K | Rust | Lightweight |
+| Claude Code | 45.8K | Shell | MCP support |
+| Aider | 38.9K | Python | Git-first, Repo Map |
+
+**Confronto chiave**:
+- **Gemini CLI**: Brute force context (2M token), grounding web
+- **Aider**: AST compresso (Repo Map), più efficiente
+- **Claude Code**: MCP nativo, tool use avanzato
+- **Plandex**: Sandbox review, pianificazione gerarchica
+
+### Parallel AI Platform (2026-02-11)
+SaaS completo per virtual companies:
+- **AI Employees**: Assistenti personalizzabili
+- **Workflows**: Automazione con trigger/conditions/actions
+- **Smart Lists**: Database spreadsheet-like
+- **Sequences**: Campagne email/LinkedIn
+- **Content Tools**: AI per immagini, audio, video
+- **Agents**: Chatbot per siti web
+
 ### FullStack Bench (Bytedance) - 2026-02-11
 Benchmark multi-linguaggio:
 - **Coverage**: 16+ linguaggi
