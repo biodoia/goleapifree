@@ -46,13 +46,32 @@ PRD → Priority story → Implement → Test → Commit → Update → Repeat
 **Critical insight**: Each iteration starts with fresh context while progress persists through files and git history.
 
 ### Agent Comparison (2026-02-11)
-| Agent | Stars | Continuous Loop | Multi-Agent | Best For |
-|-------|-------|-----------------|-------------|----------|
-| OpenHands | 52-65K | Native | ✅ 1000s | Enterprise multi-agent |
-| Aider | 40.4K | Wrapper needed | Single | Interactive pair programming |
-| SWE-agent | 10.5K | Native | Parallel instances | SWE-bench benchmarks |
-| Cline | 51K | Auto-approve | Single | VS Code integration |
-| Claude Code | 10K+ | YOLO mode | ✅ Subagents | Terminal-based loops |
+| Agent | Stars | Loop | Multi-Agent | Best For |
+|-------|-------|------|-------------|----------|
+| **OpenHands** | 67.7K | Native | ✅ 1000s | Enterprise multi-agent |
+| **Cline** | 51K | Auto-approve | Single | VS Code integration |
+| **Aider** | 40.4K | Wrapper | Single | Interactive pair |
+| **SWE-agent** | 10.5K | Native | Parallel | SWE-bench |
+| **Claude Code** | 10K+ | YOLO | ✅ Subagents | Terminal |
+
+### OpenHands Deep Dive (2026-02-11)
+**Architecture**:
+- Core Engine: Osserva → Pianifica → Agisci
+- Event Stream: Risolve "identity amnesia" (+20-30% performance)
+- Sandboxing: Docker-based per sicurezza enterprise
+- Subagents: Delegation pattern (analysis + fixing agents)
+
+**Benchmark SWE-Bench**:
+| Configuration | Verified | Lite |
+|---------------|----------|------|
+| CodeAct 2.1 + Claude 3.5 | **53%** | 41.7% |
+| CodeAct 2.1 + Qwen3-235B | 34.4% | - |
+| OpenHands LM (32B) | 37.4% | - |
+| Real-world claim | 87% issues same-day | - |
+
+**Limiti**: GPU-heavy (12GB+ VRAM), dipende da LLM sottostante
+
+**Proposta**: Integrare Event Stream pattern in GOLEM, testare con FrameGoTUI dashboard
 
 ### Go TUI Recommendation (2026-02-11)
 **Bubbletea + Lipgloss + Bubbles** (proved by OpenCode 95K stars, Crush 19.7K stars):
