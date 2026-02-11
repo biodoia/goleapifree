@@ -307,6 +307,7 @@ Module-specific panels:
 Key insight: Arrange panels based on **actual features** of each TUI app, not generic metrics.
 
 ### Multi-Agent Orchestration (2026-02-11)
+
 **Purpose-built for software development**:
 | Framework | Stars | Built-in Roles | Parallel |
 |-----------|-------|----------------|----------|
@@ -319,7 +320,7 @@ Key insight: Arrange panels based on **actual features** of each TUI app, not ge
 |-----------|-------|------------|--------------|
 | **CrewAI** | 42.6K | 60% Fortune 500 | Crews + Flows (YAML) |
 | **AutoGen/MAF** | 40-48K | Microsoft | CodeExecutorAgent |
-| **LangGraph** | 11.7K | LinkedIn, Uber | Graph-based |
+| **LangGraph** | 11.7K | LinkedIn, Uber, Replit | Graph-based |
 
 **Go options**:
 - **Google ADK-Go** (6.8K): A2A protocol
@@ -327,6 +328,8 @@ Key insight: Arrange panels based on **actual features** of each TUI app, not ge
 - **openai-agents-go**: MCP + handoffs
 
 **Bifurcation insight**: MetaGPT provides opinionated roles; CrewAI/LangGraph offer flexible building blocks.
+
+**Critical insight**: "Multi-agent orchestration for code generation is bifurcating: MetaGPT and ChatDev provide opinionated software company simulations; CrewAI and LangGraph offer flexible building blocks."
 
 ### CI/CD AI Tools (2026-02-11)
 | Tool | Type | Feature |
@@ -339,6 +342,47 @@ Key insight: Arrange panels based on **actual features** of each TUI app, not ge
 **Self-healing patterns**:
 - **Elastic**: Renovate → CI fails → Claude fixes → commits → restarts (saved ~20 days)
 - **AWS**: CloudWatch → Lambda → Bedrock → PR → human review
+
+### Ralph Loop Pattern (2026-02-11)
+**Canonical architecture for continuous autonomous coding**:
+```
+PRD → Priority story → Implement → Test → Commit → Update → Repeat
+```
+**Key implementations**:
+- frankbria/ralph-claude-code: v0.11.4, 484 tests, 100% pass rate
+- snarktank/ralph: Agent-agnostic
+- vercel/ralph-loop-agent: TypeScript + AI SDK, verification gates, cost limits
+
+**Critical insight**: Each iteration starts with fresh context while progress persists through files and git history.
+
+### WebTUI Reference Stack (2026-02-11)
+| Component | Purpose |
+|-----------|---------|
+| **xterm.js** | Browser terminal emulation (19.5K stars) |
+| **WebTUI CSS** | Terminal aesthetics (2.2K stars) |
+| **gotty** | Go + WebSocket PTY streaming (19.4K stars) |
+| **Nexterm** | Reference: Node.js + React + Socket.IO + xterm.js |
+
+**Architecture**:
+```
+CSS Grid Container
+├── xterm.js (Agent 1) ── WebSocket ── PTY
+├── xterm.js (Agent 2) ── WebSocket ── PTY
+└── xterm.js (Agent N) ── WebSocket ── PTY
+```
+
+### Full Autonomous Loop (2026-02-11)
+| Phase | Tool | Purpose |
+|-------|------|---------|
+| Analyze | CodeRabbit / Qodo Merge | Automated PR review |
+| Generate | Ralph Loop + OpenHands | Autonomous code |
+| Review | pr-agent / Graphite | AI-powered review |
+| Test | Qodo Cover + CircleCI Chunk | Auto-test + flaky fix |
+| Deploy | GitHub Actions | AI-optimized pipelines |
+| Monitor | SRE Agent / Snyk | Self-healing |
+| Repeat | GitHub Agentic Workflows | Event-triggered cycles |
+
+**Key insight**: "The full autonomous loop remains an assembly of specialized tools... but continuous autonomous programming is running in production today."
 
 ### WebTUI Reference Stack (2026-02-11)
 | Component | Purpose |
