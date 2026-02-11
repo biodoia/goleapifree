@@ -251,6 +251,26 @@ Staged autonomy per production adoption:
 2. **Recommender**: AI suggests, human approves
 3. **Autonomous**: AI acts with human override paths
 
+### Sergio's 6-Layer Autonomous Coding Guide (2026-02-11)
+**Layer 1 - Fondamenti**: OpenHands (52-65K stars, $18.8M funding), Ralph Loop (PRD→code→test→commit→repeat)
+**Layer 2 - Agenti**: OpenHands (90% confidenza vs Devin), Aider (40.4K, terminal pair-programming), SWE-agent (10.5K, 76.4% SWE-bench)
+**Layer 3 - Orchestrazione**: MetaGPT (57.6K, simula PM/Engineer/QA), CrewAI (42.6K, enterprise king), LangGraph (4.2M downloads/mese)
+**Layer 4 - Monitoring**: Bubbletea (39.2K, Go TUI), xterm.js (19.5K, WebTUI), gotty (19.4K, WS PTY)
+**Layer 5 - RAG**: HyDE + hybrid search, Superposition Prompting (93x speedup), LLM-as-judge validation
+**Layer 6 - Produzione**: Ralph Loop Elastic (20 days saved), CircleCI Chunk (60% flaky fix), full-autonomous ready (80% confidenza)
+
+### Claude Skills Official Format (2026-02-11)
+**Required**: YAML frontmatter con `name` (64 char) + `description` (200 char, critical per triggering)
+**Optional**: `dependencies`, `resources/` folder, `scripts/` folder
+**Structure**: SKILL.md + references/ + scripts/ + assets/
+**Reference**: https://agentskills.io/, examples su https://github.com/anthropics/skills
+
+### Agent Products Ecosystem (agentskills.io carousel)
+**CLI Agents**: Gemini CLI, OpenCode, Claude Code, Goose, Roo Code
+**IDE/Editors**: Cursor, Amp, Letta, Firebender, Command Code
+**Enterprise**: Factory (Droid), Qodo, Piebald, TRAE
+**Specialty**: pi (shitty agent), Databricks, Agentman
+
 ### Three Laws of Agentic Development (2026-02-10)
 1. **Verification > Generation** - Cost(deploying wrong) >> Cost(generating wrong)
 2. **Context is Finite, Memory is Infinite** - Externalize to disk
