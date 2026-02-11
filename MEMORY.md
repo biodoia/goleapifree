@@ -189,6 +189,37 @@ Loop autonomi per ore/giorni finché task completato.
 - "AI slop" = volume > capacità review
 - Soluzione: verification harness automatici
 
+### EDDOps (Evaluation-Driven Dev & Ops) - 2026-02-11
+Evaluation come funzione di governo permanente:
+- **Offline (dev)** ↔ **Online (runtime)** feedback loop
+- **Metriche**: task success, context usage, hallucination rate, human override
+- **Process model** con reference architecture
+- **Red-teaming integrato** come parte del processo
+
+### Superposition Prompting (Apple) - 2026-02-11
+RAG acceleration technique:
+- **Speedup**: 93x su query RAG
+- **Accuracy boost**: 43% su NaturalQuestions
+- **Perché funziona**: Riduce interference tra retrieved chunks
+
+### FullStack Bench (Bytedance) - 2026-02-11
+Benchmark multi-linguaggio:
+- **Coverage**: 16+ linguaggi
+- **Focus**: Cross-language code generation
+- **Reference**: Per validare agenti su diversi stack
+
+### Megagon Labs Blueprint - 2026-02-11
+Stream-based orchestration per agenti:
+- **Componenti**: Planner + Orchestrator + Data streams
+- **Ottimizzazione**: Task scheduling intelligente
+- **Reference architecture**: Per offline/online evaluation loops
+
+### Trust-Tier Framework (2026-02-11)
+Staged autonomy per production adoption:
+1. **Advisory**: AI gives non-blocking signals
+2. **Recommender**: AI suggests, human approves
+3. **Autonomous**: AI acts with human override paths
+
 ### Three Laws of Agentic Development (2026-02-10)
 1. **Verification > Generation** - Cost(deploying wrong) >> Cost(generating wrong)
 2. **Context is Finite, Memory is Infinite** - Externalize to disk
