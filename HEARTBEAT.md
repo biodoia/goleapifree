@@ -1,5 +1,11 @@
 # HEARTBEAT.md - 24/7 Autonomous Work
 
+## 🎯 Autonomous Mode
+
+**Every Biodoia repo → connects to memogo databases**
+- URL Database, Memory Bank, Knowledge Graph
+- All persistent data in memogo
+
 ## 🔄 Active Task Queue
 
 ### Priority 1: cligolist cleanup + enrichment ✅ DONE
@@ -20,13 +26,19 @@
 - [x] Z.AI model integration (GLM-4-32B, GLM-Z1-32B)
 - [x] Agent specialization by model capability
 - [x] Demo tape created
-- 🔄 Phase 2: Z.AI provider (streaming, function calling)
-- 🔄 Phase 3: Claude parity (file ops, shell, session management)
-  - [x] Session persistence (save/load, :s/:n/:l commands)
+- [x] Phase 2: Z.AI provider (streaming, function calling) - `67ae1a3`
+- [x] Phase 2b: Function calling integration - `d523937` ✅
+  - ToolRegistry, file tools (487 lines), shell tools (404 lines)
+  - Streaming with tool_calls parsing, max 10 iterations loop
+- [x] Phase 3: Claude parity - `d523937` ✅
+  - [x] Session persistence (auto-save 5 msg, :s/:n/:l/:load/:rename/:delete/:export/:import)
+  - [x] File ops (read/write/list/search)
+  - [x] Shell ops (execute sync/background)
 - 🔄 Phase 4: MCP enterprise (full integration)
 - 🔄 Phase 5: FrameGoTUI TUI (enhancements)
 - 🔄 Phase 6: Enterprise quality (polishing)
-- Latest: `b792b02` - 💾 Session persistence
+- [x] Demo tape created - `d6e57a9`
+- Latest: `d6e57a9` - 📼 Add VHS demo tape
 
 ### Priority 4: goclit-ai animation ✅ DONE
 - [x] Copilot animation technique analyzed
@@ -59,19 +71,18 @@
 - [x] Mouse position in footer: [🖱️ X,Y]
 - [x] Sergio: "supporto del mouse"
 
-### Priority 8: Auto-Claude-Go ✅ DONE (2026-02-10)
+### Priority 8: Auto-Claude-Go 🔄 ENHANCING (sub-agents active)
 - [x] Research: AndyMik90/Auto-Claude (11,706 stars)
 - [x] Create Go TUI implementation structure
 - [x] Add core models (task, memory, roadmap, ideation, terminal, chat, changelog)
 - [x] Commit: `12e19f7` - 371 lines of models
-- [x] Kanban Board - 4-column task management (TODO/PROGRESS/REVIEW/DONE)
+- [x] Kanban Board base - `ff0d5da`
 - [x] Agent Terminals - 6 agent grid with FREE model rotation
-- [x] Memory Layer - Searchable memory with relevance scores
-- [x] Insights Chat - Codebase Q&A interface
-- [x] Ideation - Ideas & issues board with voting/approval
-- [x] Roadmap - Quarterly feature planning (Q1-Q4 2026)
-- [x] Changelog - Version history with semantic changes
-- [x] Commit: `6d9fbf6` - 1,455 lines of TUI code
+- [x] Memory Layer base
+- [x] Unit tests - `a5edf54`
+- [x] Security fixes - `9892f2e`
+- 🔄 Kanban Board TUI enhancements (sub-agent: autoclaude-kanban)
+- 🔄 Memory Layer TUI enhancements (sub-agent: autoclaude-memory)
 - Location: `/home/lisergico25/repos/auto-claude-go`
 
 ### Priority 9: Extended Free + Ultra-Cheap Models ✅ DONE (UPDATED)

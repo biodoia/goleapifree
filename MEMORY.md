@@ -1,6 +1,8 @@
 # MEMORY.md - Long-Term Memory
 
 > Curated wisdom from daily sessions
+>
+> **ARCHITECTURAL RULE (2026-02-11)**: Tutti i repo Biodoia devono appoggiarsi ai database su memogo.
 
 ---
 
@@ -22,6 +24,44 @@
 ## 🔑 Key Patterns
 
 ### Perpetual Engine (2026-02-10)
+Autonomous loop pattern for self-improving systems:
+1. **Fresh context per iteration** - Clean slate every cycle
+2. **Persistent memory** - Git + Memory Bank + task_state.json
+3. **6 phases**: OBSERVE → PLAN → EXECUTE → VALIDATE → PERSIST → LEARN
+4. **Empirical validation** over formal proofs
+5. **Population-based evolution** with Agent Archive
+
+Sources: Ralph (snarktank), Darwin-Godel (lemoz)
+
+### Ralph Loop Pattern (2026-02-11)
+**Canonical architecture** for continuous autonomous coding:
+```
+PRD → Priority story → Implement → Test → Commit → Update → Repeat
+```
+**Key implementations**:
+- frankbria/ralph-claude-code: v0.11.4, 484 tests, 100% pass rate
+- snarktank/ralph: Agent-agnostic
+- vercel/ralph-loop-agent: TypeScript + AI SDK
+
+**Critical insight**: Each iteration starts with fresh context while progress persists through files and git history.
+
+### Agent Comparison (2026-02-11)
+| Agent | Stars | Continuous Loop | Multi-Agent | Best For |
+|-------|-------|-----------------|-------------|----------|
+| OpenHands | 52-65K | Native | ✅ 1000s | Enterprise multi-agent |
+| Aider | 40.4K | Wrapper needed | Single | Interactive pair programming |
+| SWE-agent | 10.5K | Native | Parallel instances | SWE-bench benchmarks |
+| Cline | 51K | Auto-approve | Single | VS Code integration |
+| Claude Code | 10K+ | YOLO mode | ✅ Subagents | Terminal-based loops |
+
+### Go TUI Recommendation (2026-02-11)
+**Bubbletea + Lipgloss + Bubbles** (proved by OpenCode 95K stars, Crush 19.7K stars):
+- `viewport`: Log streaming
+- `progress`: Spring physics animation
+- `filepicker`: File browsing
+- `list`: Fuzzy task filtering
+
+**tview alternative**: Built-in Grid + Flex layout, good for traditional widgets.
 Autonomous loop pattern for self-improving systems:
 1. **Fresh context per iteration** - Clean slate every cycle
 2. **Persistent memory** - Git + Memory Bank + task_state.json
@@ -57,6 +97,37 @@ SELECT → IMPLEMENT → VALIDATE → COMMIT → UPDATE → RESET → LOOP
 - AGENTS.md: **100% pass rate** (passive, sempre in prompt)
 - Dynamic Skills: 79% pass rate (active retrieval, decisione richiesta)
 - Takeaway: Passive context >> active retrieval
+
+### OpenHands SDK Insights (2026-02-10)
+Python SDK con skill system simile al nostro + Remote Agent Server:
+
+**Skill Types** (3 livelli):
+- `repo_skills`: AGENTS.md style, sempre attivi
+- `knowledge_skills`: knowledge/ subdirs, progressive disclosure
+- `agent_skills`: SKILL.md files, triggered or on-demand
+
+**Keyword Triggers** (estensione OpenHands):
+```python
+Skill(
+    name="encryption-helper",
+    content="Use encrypt.sh",
+    trigger=KeywordTrigger(keywords=["encrypt", "decrypt"]),
+)
+```
+
+**Remote Agent Architecture**:
+```
+Client (SDK) → Agent Server (HTTP/WS) → Workspace (Docker/VM/Local)
+```
+
+**Per GOLEM**: Implementare pattern simile in Go:
+- GOLEMWorkspace interface
+- DockerRemoteWorkspace, LocalWorkspace
+- WebSocket event streaming
+
+**Public Skills Registry**: OpenHands usa `github.com/OpenHands/skills` - potremmo fare `github.com/biodoia/autoschei-skills`
+
+Source: `gofainder/notebooklm-dumps/2026-02-10-openhands-analysis.md`
 
 ### EDDOps (Evaluation-Driven Dev & Ops)
 Valutazione = funzione di governo permanente, non checkpoint finale
@@ -124,17 +195,38 @@ Verification ensures correctness despite non-comprehension.
 
 ### Bottegaiarda Architecture (2026-02-10)
 Sistema autonomo di coding con 14 agenti e 4 layer:
-- **Orchestration**: Supreme Orchestrator, Task Router, Priority Manager
-- **Sentinel** (sistema immunitario): Code Archaeologist, Pattern Architect, Debt Sentinel, Security Auditor
-- **Coding**: Feature Architect, Implementation Coder, Test Engineer, Refactor Oracle
-- **Infrastructure**: Git Manager, CI/CD Controller, Deploy Agent, Monitor Daemon
+- **Orchestration**: Supreme Orchestrator (Premium), Task Router (Cheap), Priority Manager (Cheap)
+- **Sentinel** (sistema immunitario): Code Archaeologist (Free), Pattern Architect, Debt Sentinel, Security Auditor (Cheap)
+- **Coding**: Feature Architect, Implementation Coder, Refactor Oracle (Premium), Test Engineer (Cheap)
+- **Infrastructure**: Git Manager, Monitor Daemon (Free), CI/CD Controller, Deploy Agent (Cheap)
 
-### Sentinel Protocol
+📖 Full doc: `gofainder/notebooklm-dumps/2026-02-10-bibbia-coding-agentico.md`
+
+### Sentinel Protocol (5 Quality Gates)
 Validazione automatica con blocco su:
 - Debt Score > 50 → merge bloccato
 - Complessità ciclotomatica > 15
 - Pattern compliance < 80%
 - Test coverage delta negativo
+- Efferent coupling > 20
+
+### Frizione Automatizzata (2026-02-10)
+L'AI rimuove l'attrito umano → debito tecnico invisibile ("Ghost in the Machine")
+Soluzione: incorporare l'attrito nel design via **sistema immunitario agentico**
+- Sistema "Inherited" (ereditato) → male, AI amplifica debito
+- Sistema "Owned" (posseduto) → bene, vincoli qualità embedded
+
+### 10 Comandamenti del Coding Autonomo
+1. Non codificare mai al buio (contesto obbligatorio)
+2. Valida prima del merge (Sentinel non bypassabile)
+3. Sii padrone dei tuoi pattern (Pattern Registry sacro)
+4. Testa ciò che crei (coverage delta ≥ 0)
+5. Rifattorizza, non rattoppare (trasforma, non benda)
+6. Documenta ogni decisione (ADR = memoria storica)
+7. Separa le preoccupazioni (specializzazione > generalismo)
+8. Escala l'incertezza < 80% (umano = ultima difesa)
+9. Logga tutto (audit trail per debug swarm)
+10. Migliora continuamente (scavenging modelli/provider)
 
 ### 4-Tier Hybrid Infrastructure
 1. **Paid** (forfettari): Claude, GPT, Gemini - task critici
@@ -162,10 +254,33 @@ Costo stimato: $0.10-0.15 per workflow completo
 - OpenRouter aggregation
 
 ### Bifrost vs LiteLLM
-| Metrica | LiteLLM | Bifrost |
-|---------|---------|---------|
+| Metrica | LiteLLM | Bifrost (maximhq) |
+|---------|---------|-------------------|
 | Latency | 500µs | 11µs |
 | RAM | 372MB | 120MB |
+| Providers | 100+ | 15+ |
+| MCP | ❌ | ✅ |
+| Semantic Cache | ❌ | ✅ |
+| Web UI | ❌ | ✅ |
+
+**Bifrost (maximhq)**: https://github.com/maximhq/bifrost - Gateway completo con MCP, semantic caching, enterprise features
+
+**bifrost-free**: Plugin per maximhq/bifrost che aggiunge free provider aggregation
+
+### Free LLM APIs (2026-02-10)
+**Lista completa**: `gofainder/notebooklm-dumps/2026-02-10-free-llm-apis.md`
+
+| Provider | Limiti | Note |
+|----------|--------|------|
+| OpenRouter | 20 req/min, 50 req/day | 30+ modelli gratuiti |
+| **Groq** | 14,400 req/day (Llama 3.1 8B) | ⚡ Migliore velocità |
+| Google AI Studio | 250K tokens/min | Gemini models |
+| Cloudflare Workers | 10K neurons/day | Edge inference |
+| Cerebras | 30 req/min | Large models |
+| NVIDIA NIM | 40 req/min | Enterprise |
+| HuggingFace | $0.10/mese | Qualsiasi modello open |
+
+**Trial credits**: Fireworks $1, Baseten $30, Nebius $1, Novita $0.5/anno
 
 ### Capability-Based Routing
 Virtual endpoints: `fast-go-coder`, `deep-reasoner`, `long-context-analyst`
@@ -190,6 +305,50 @@ Module-specific panels:
 - Memogo: Memory/Context/Learning
 
 Key insight: Arrange panels based on **actual features** of each TUI app, not generic metrics.
+
+### Multi-Agent Orchestration (2026-02-11)
+**Purpose-built for software development**:
+| Framework | Stars | Built-in Roles | Parallel |
+|-----------|-------|----------------|----------|
+| **MetaGPT** | 57.6K | PM, Architect, Engineer, QA | ✅ MacNet |
+| **ChatDev** | 27.1K | CEO, CTO, Programmer, Tester | ✅ |
+| **Magentic-One** | Microsoft | Orchestrator, Coder, WebSurfer | ✅ |
+
+**General-purpose frameworks**:
+| Framework | Stars | Enterprise | Architecture |
+|-----------|-------|------------|--------------|
+| **CrewAI** | 42.6K | 60% Fortune 500 | Crews + Flows (YAML) |
+| **AutoGen/MAF** | 40-48K | Microsoft | CodeExecutorAgent |
+| **LangGraph** | 11.7K | LinkedIn, Uber | Graph-based |
+
+**Go options**:
+- **Google ADK-Go** (6.8K): A2A protocol
+- **Eino** (ByteDance): DeepAgent
+- **openai-agents-go**: MCP + handoffs
+
+**Bifurcation insight**: MetaGPT provides opinionated roles; CrewAI/LangGraph offer flexible building blocks.
+
+### CI/CD AI Tools (2026-02-11)
+| Tool | Type | Feature |
+|------|------|---------|
+| CircleCI Chunk | CI native | Fix flaky tests (60% success) |
+| GitHub Agentic Workflows | YAML | Multi-agent orchestration |
+| **CodeRabbit** | Commercial | Most installed (632K PRs reviewed) |
+| **Qodo pr-agent** | Open Source | 10K stars, /review /improve |
+
+**Self-healing patterns**:
+- **Elastic**: Renovate → CI fails → Claude fixes → commits → restarts (saved ~20 days)
+- **AWS**: CloudWatch → Lambda → Bedrock → PR → human review
+
+### WebTUI Reference Stack (2026-02-11)
+| Component | Purpose |
+|-----------|---------|
+| **xterm.js** | Browser terminal emulation (19.5K stars) |
+| **gotty** | Go + WebSocket PTY streaming |
+| **WebTUI** | Pure CSS terminal aesthetics |
+| **Nexterm** | Reference: Node.js + React + Socket.IO + xterm.js |
+
+**Pattern**: CSS Grid with xterm.js instances, each WebSocket-connected to separate agent PTY.
 
 ---
 
@@ -263,10 +422,12 @@ ghrego(scan) → gociccidai → goaiaiai → govai(deploy) → ghrego(commit)
 
 ## 📍 Important Paths
 
+- **Memogo**: `/home/lisergico25/repos/memogo` (Database centrale!)
+  - URL Database: `memogo/url_database/`
+  - Memory Bank: `memogo/memory-bank/`
+  - Knowledge Graph: `memogo/graph/`
 - Autoschei: `/home/lisergico25/repos/autoschei`
-- Engine: `/home/lisergico25/repos/autoschei/engine`
-- Memory Bank: `/home/lisergico25/repos/autoschei/memory-bank`
-- Binaries: `/home/lisergico25/repos/autoschei/bin`
+- FrameGoTUI: `/home/lisergico25/repos/framegotui`
 - Daily notes: `/home/lisergico25/clawd/memory/`
 
 ---
@@ -281,4 +442,4 @@ ghrego(scan) → gociccidai → goaiaiai → govai(deploy) → ghrego(commit)
 
 ---
 
-*Last updated: 2026-02-10 (Systemd Manager + Free Models)*
+*Last updated: 2026-02-11 (Multi-agent orchestration + WebTUI + Definitive Stack Guide)*
